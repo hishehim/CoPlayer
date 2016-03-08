@@ -35,4 +35,9 @@ public class Application extends Controller {
         /***need a view page for user profile***/
         return ok(index.render("go to profile page"));
     }
+
+    public Result logout() {
+        session().remove("user_id");
+        return redirect(routes.Application.index());
+    }
 }
