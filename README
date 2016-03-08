@@ -1,4 +1,9 @@
-This is your new Play application
-=================================
+##*under development*
 
-This file will be packaged with your application, when using `activator dist`.
+#Description:
+
+Small web-tool application that will allow users to create a congregated
+playlist from various video/audio hosting sources using the embedded
+player API.
+
+_Framework:_ Play-Java
