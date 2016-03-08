@@ -32,6 +32,8 @@ public class mPlaylist extends Model {
     @Constraints.Required
     private long createTime;
 
+    boolean isPrivate = false;
+
     private int size = 0;
 
     @OneToMany(mappedBy = "playListID", cascade = CascadeType.ALL)
