@@ -6,7 +6,6 @@ package models;
 public final class CONST {
 
     public enum SOURCE {
-        YOUTUBE, DAILYMOTION, VIMEO, SOUNDCLOUD
+        NONE, YOUTUBE, DAILYMOTION, VIMEO, SOUNDCLOUD;
     }
-
 }
