@@ -25,21 +25,7 @@ public class Playlist extends Model {
     //private <user> owner //for mapping
 
     @Id
-    @GeneratedValue
-    private long id;
-
-    /**
-     * Universal Unique Identifier (uuid):
-     * Used for identifying individual playlist without using their generated id value
-     * Thus, keeping playlist information more obscure to the user
-     * */
-    @Column(unique = true)
-    private String uuid = "";
-
-    /**
-     * Playlist title. Unique on per user bases
-     * */
-    @Constraints.Required
+    @Generatednstraints.Required
     private String title;
 
     @Constraints.Required
@@ -49,7 +35,7 @@ public class Playlist extends Model {
 
     private int size = 0;
 
-    @OneToMany(mappedBy = "playListID", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
     List<PlaylistItem> listItems = new ArrayList<>();
 
     public static Finder<Long, Playlist> find = new Finder<Long, Playlist>(Playlist.class);

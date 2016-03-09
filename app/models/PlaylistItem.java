@@ -10,14 +10,18 @@ import javax.persistence.*;
  * Created by Mike on 3/6/2016.
  * Entity for holding information on each playlist item
  */
+@Table(
+        uniqueConstraints =
+                @UniqueConstraint(columnNames = {"playlist_id","id"})
+)
 @Entity
 public class PlaylistItem extends Model {
 
     @ManyToOne(cascade = CascadeType.ALL)
-    private Playlist playlistID;
+    private Playlist playlist;
 
-    /*@Id
-    private long id;*/
+    @GeneratedValue
+    private long id;
 
     @Enumerated(EnumType.STRING)
     @Constraints.Required
@@ -26,6 +30,7 @@ public class PlaylistItem extends Model {
     @Constraints.Required
     private String link;
 
+    // used prevent initialization without the use of factory method
     private PlaylistItem() {}
 
     public static Finder<Long, PlaylistItem> find = new Finder<Long, PlaylistItem>(PlaylistItem.class);
@@ -39,8 +44,8 @@ public class PlaylistItem extends Model {
         return item;
     }
 
-    public Playlist getPlaylistID() {
-        return playlistID;
+    public Playlist getPlaylist() {
+        return playlist;
     }
 
     public CONST.SOURCE getSourceType() {
