@@ -25,8 +25,14 @@ public class Playlist extends Model {
     //private <user> owner //for mapping
 
     @Id
-    @Generatednstraints.Required
+    private long id;
+
+    @Constraints.Required
     private String title;
+
+    @Column(unique = true)
+    @Constraints.Required
+    private String uuid;
 
     @Constraints.Required
     private long createTime;
