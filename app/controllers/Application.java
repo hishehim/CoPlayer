@@ -16,8 +16,7 @@ public class Application extends Controller {
     public Result index() {
         return ok(index.render("Your new application is ready."));
     }
-    /***Need a view page for getting to the login page***/
-    public Result getlogin() {return ok(index.render("login"));}
+    public Result getlogin() {return ok(views.html.login.render(""));}
 
     public Result login() {
         DynamicForm userForm = form().bindFromRequest();
@@ -31,8 +30,7 @@ public class Application extends Controller {
             flash("success","Welcome back " +user.username);
         }else{
             flash("error", "Invalid login. Please check your username and password");
-            /*** login page ***/
-            return ok(index.render("back to login page"));
+            return redirect(routes.Application.getlogin());
         }
         /***need a view page for user profile***/
         return ok(index.render("go to profile page"));
