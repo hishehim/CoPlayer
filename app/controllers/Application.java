@@ -40,8 +40,8 @@ public class Application extends Controller {
         session().remove("user_id");
         return redirect(routes.Application.index());
     }
-    /***need a veiw page for sign up***/
-    public Result signup(){return ok(index.render("singup"));}
+
+    public Result signup(){return ok(views.html.signupform.render(""));}
 
     public Result newUser() {
         String USERNAME_PATTERN = "^[a-zA-Z0-9_-]$";
@@ -52,25 +52,25 @@ public class Application extends Controller {
         String password = userForm.data().get("password");
         String email = userForm.data().get("email");
 
-        //Check for empty fileds in the form
+        //Check for empty fields in the form
         if(password.isEmpty()||username.isEmpty()||email.isEmpty()){
             flash("error" , "Empty Fields");
-            /***return to signup page***/
+            return redirect(routes.Application.signup());
         }
         //Check for valid characters for username and password
         if(!pattern.matcher(username).matches() || !pattern.matcher(password).matches()){
             flash("error","Invalid Character");
-            /***return to signup page***/
+            return redirect(routes.Application.signup());
         }
         //Check if username is already in use
         if(Users.find.where().eq("username",username).findUnique() != null){
             flash("error","Duplicate username");
-            /***return to signup page***/
+            return redirect(routes.Application.signup());
         }
         //Check if email is already in use
         if(Users.find.where().eq("email",email).findUnique() != null){
             flash("error","Email already registered");
-            /***return to signup page***/
+            return redirect(routes.Application.signup());
         }
 
         Users nUser = Users.createUser(username,password,email);
