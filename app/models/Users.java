@@ -7,23 +7,24 @@ package models;
 import com.avaje.ebean.Model;
 import javax.persistence.*;
 import java.util.List;
-import java.util.regex.Pattern;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.validation.Constraints;
 
 public class Users extends Model{
-    private static final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]";
-    public static final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
     @Id
     public Long id;
 
+    @Constraints.Required
+    @Column(unique = true)
     public String email;
 
     @Constraints.Required
     @Column(unique = true)
     public String username;
 
+    @Constraints.Required
+    @Column(unique = true)
     public String password_hash;
 
     public static Model.Finder<Long,Users> find = new Model.Finder<Long, Users>(Users.class);
