@@ -14,6 +14,7 @@ create table playlist (
   constraint pk_playlist primary key (id))
 ;
 
+<<<<<<< HEAD
 create table playlist_item (
   playlist_id               bigint,
   id                        bigint,
@@ -21,6 +22,13 @@ create table playlist_item (
   link                      varchar(255),
   constraint ck_playlist_item_source_type check (source_type in ('NONE','YOUTUBE','DAILYMOTION','VIMEO','SOUNDCLOUD')),
   constraint uq_playlist_item_1 unique (playlist_id,id))
+=======
+create table m_playlist_item (
+  play_list_id_id           bigint,
+  source_type               varchar(11),
+  link                      varchar(255),
+  constraint ck_m_playlist_item_source_type check (source_type in ('YOUTUBE','DAILYMOTION','VIMEO','SOUNDCLOUD')))
+>>>>>>> user_model
 ;
 
 alter table playlist_item add constraint fk_playlist_item_playlist_1 foreign key (playlist_id) references playlist (id);
