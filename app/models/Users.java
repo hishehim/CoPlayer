@@ -32,7 +32,7 @@ public class Users extends Model{
     public boolean authenticate (String password) {return BCrypt.checkpw(password,this.password_hash);}
 
     @OneToMany(mappedBy = "uuid") //not sure mapped by what yet
-    public List<mPlaylist> myPlaylists;
+    public List<Playlist> playlists;
 
     public static Users createUser(String username, String password, String email){
         String passwordHash = BCrypt.hashpw(password,BCrypt.gensalt());
