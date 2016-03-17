@@ -13,6 +13,9 @@ import static play.data.Form.form;
 
 public class Application extends Controller {
 
+    final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]$";
+    final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+
     public Result index() {
         return ok(index.render("Your new application is ready."));
     }
@@ -20,13 +23,16 @@ public class Application extends Controller {
 
     public Result login() {
         DynamicForm userForm = form().bindFromRequest();
+        if (userForm.hasErrors()) {
+            return badRequest(views.html.login.render(""));
+        }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
 
         Users user = Users.find.where().eq("username",username).findUnique();
         /***need to set up flash message on main***/
         if (user != null && user.authenticate(password)){
-            session("user_id",user.id.toString());
+            session("user_id",String.valueOf(user.id));
             flash("success","Welcome back " +user.username);
         }else{
             flash("error", "Invalid login. Please check your username and password");
@@ -44,10 +50,11 @@ public class Application extends Controller {
     public Result signup(){return ok(views.html.signupform.render(""));}
 
     public Result newUser() {
-        String USERNAME_PATTERN = "^[a-zA-Z0-9_-]$";
-        Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
         DynamicForm userForm = form().bindFromRequest();
+        if (userForm.hasErrors()) {
+            return badRequest(views.html.signupform.render(""));
+        }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
         String email = userForm.data().get("email");

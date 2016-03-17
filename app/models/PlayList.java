@@ -13,16 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/*
+
 @Table(
-    // sets a composite unique constraint for user_id and playlist-title
+    // sets a composite unique constraint for user_id and playlists-title
     uniqueConstraints =
-        @UniqueConstraint(columnNames = {"user_id", "title"}))
-*/
+        @UniqueConstraint(columnNames = {"owner_id", "title"})
+)
+
 @Entity
 public class Playlist extends Model {
 
-    //private <user> owner //for mapping
+    @ManyToOne
+    private Users owner;
 
     @Id
     private long id;
@@ -41,7 +43,7 @@ public class Playlist extends Model {
 
     private int size = 0;
 
-    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentList", cascade = CascadeType.ALL)
     List<PlaylistItem> listItems = new ArrayList<>();
 
     public static Finder<Long, Playlist> find = new Finder<Long, Playlist>(Playlist.class);
@@ -63,6 +65,8 @@ public class Playlist extends Model {
         listItems.add(item);
         return 0;
     }
+/*
+    public Users getOwner() { return owner; }*/
 
     public boolean isPrivate() {
         return isPrivate;
@@ -91,4 +95,6 @@ public class Playlist extends Model {
     public List<PlaylistItem> getListItems() {
         return listItems;
     }
+
+
 }

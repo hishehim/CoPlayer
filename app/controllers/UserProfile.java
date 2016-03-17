@@ -1,7 +1,6 @@
 package controllers;
 
-import models.Users;
-import models.mPlaylist;
+import models.*;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -26,8 +25,8 @@ public class UserProfile extends Controller {
         if(user ==  null){
             return notFound("not found");
         }else{
-            List<mPlaylist> userPlaylist = user.myPlaylists;
-            //create a new list if user did not have a plylist
+            List<Playlist> userPlaylist = user.playlists;
+            //create a new list if user did not have a playlists
             if(userPlaylist == null){
                 userPlaylist = new ArrayList<>();
                 /***Need a Profile View Page***/

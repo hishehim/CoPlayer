@@ -6,14 +6,16 @@ package models;
 
 import com.avaje.ebean.Model;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.validation.Constraints;
 
+@Entity
 public class Users extends Model{
 
     @Id
-    public Long id;
+    public long id;
 
     @Constraints.Required
     @Column(unique = true)
@@ -31,8 +33,8 @@ public class Users extends Model{
 
     public boolean authenticate (String password) {return BCrypt.checkpw(password,this.password_hash);}
 
-    @OneToMany(mappedBy = "uuid") //not sure mapped by what yet
-    public List<Playlist> playlists;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    public List<Playlist> playlists = new ArrayList<>();
 
     public static Users createUser(String username, String password, String email){
         String passwordHash = BCrypt.hashpw(password,BCrypt.gensalt());

@@ -8,18 +8,18 @@ import javax.persistence.*;
 
 /**
  * Created by Mike on 3/6/2016.
- * Entity for holding information on each playlist item
+ * Entity for holding information on each playlists item
  */
 @Table(
         uniqueConstraints =
-                @UniqueConstraint(columnNames = {"playlist_id","id"})
+                @UniqueConstraint(columnNames = {"parent_list_id","id"})
 )
 @Entity
 public class PlaylistItem extends Model {
 
     @Constraints.Required
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Playlist playlist;
+    @ManyToOne
+    private Playlist parentList;
 
     @GeneratedValue
     private long id;
@@ -45,13 +45,13 @@ public class PlaylistItem extends Model {
     private PlaylistItem() {}
 
     /**
-     * Default private constructor used to create a playlist item
-     * @param playlist the playlist this item belongs to.
+     * Default private constructor used to create a playlists item
+     * @param parentList the playlists this item belongs to.
      * @param type defines the type of the source.
      * @param link the embedded video link
      * */
-    private PlaylistItem(Playlist playlist, SourceType type, String link) {
-        this.playlist = playlist;
+    private PlaylistItem(Playlist parentList, SourceType type, String link) {
+        this.parentList = parentList;
         this.sourceType = type;
         this.link = link;
     }
@@ -60,8 +60,8 @@ public class PlaylistItem extends Model {
 
 
     /**
-     * Factory method for creating a playlist item. Data are validated here.
-     * @param playlist the playlist this item belongs to.
+     * Factory method for creating a playlists item. Data are validated here.
+     * @param playlist the playlists this item belongs to.
      * @param type defines the type of the source.
      * @param link the embedded video link
      * */
@@ -76,8 +76,8 @@ public class PlaylistItem extends Model {
         return new PlaylistItem();
     }
 
-    public Playlist getPlaylist() {
-        return playlist;
+    public Playlist getParentList() {
+        return parentList;
     }
 
     public SourceType getSourceType() {

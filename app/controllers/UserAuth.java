@@ -16,7 +16,11 @@ public class UserAuth extends Security.Authenticator{
             return null;
 
         Users user = Users.find.byId(Long.parseLong(userIDStr));
-        return(user != null ? user.id.toString() : null);
+        if (user == null) {
+            ctx.session().clear();
+            return null;
+        }
+        return  String.valueOf(user.id);
     }
 
     @Override
