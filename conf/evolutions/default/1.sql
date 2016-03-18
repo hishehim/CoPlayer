@@ -4,13 +4,13 @@
 # --- !Ups
 
 create table playlist (
-  id                        bigserial not null,
+  id                        bigint not null,
   owner_id                  bigint,
   title                     varchar(255),
   uuid                      varchar(255),
-  create_time               bigint,
   is_private                boolean,
   size                      integer,
+  create_time               timestamp not null,
   constraint uq_playlist_uuid unique (uuid),
   constraint uq_playlist_1 unique (owner_id,title),
   constraint pk_playlist primary key (id))
@@ -30,7 +30,7 @@ create table source_type (
 ;
 
 create table users (
-  id                        bigserial not null,
+  id                        bigint not null,
   email                     varchar(255),
   username                  varchar(255),
   password_hash             varchar(255),
@@ -40,22 +40,38 @@ create table users (
   constraint pk_users primary key (id))
 ;
 
-alter table playlist add constraint fk_playlist_owner_1 foreign key (owner_id) references users (id);
+create sequence playlist_seq;
+
+create sequence source_type_seq;
+
+create sequence users_seq;
+
+alter table playlist add constraint fk_playlist_owner_1 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_playlist_owner_1 on playlist (owner_id);
-alter table playlist_item add constraint fk_playlist_item_parentList_2 foreign key (parent_list_id) references playlist (id);
+alter table playlist_item add constraint fk_playlist_item_parentList_2 foreign key (parent_list_id) references playlist (id) on delete restrict on update restrict;
 create index ix_playlist_item_parentList_2 on playlist_item (parent_list_id);
-alter table playlist_item add constraint fk_playlist_item_sourceType_3 foreign key (source_type_source_type) references source_type (source_type);
+alter table playlist_item add constraint fk_playlist_item_sourceType_3 foreign key (source_type_source_type) references source_type (source_type) on delete restrict on update restrict;
 create index ix_playlist_item_sourceType_3 on playlist_item (source_type_source_type);
 
 
 
 # --- !Downs
 
-drop table if exists playlist cascade;
+SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table if exists playlist_item cascade;
+drop table if exists playlist;
 
-drop table if exists source_type cascade;
+drop table if exists playlist_item;
 
-drop table if exists users cascade;
+drop table if exists source_type;
+
+drop table if exists users;
+
+SET REFERENTIAL_INTEGRITY TRUE;
+
+drop sequence if exists playlist_seq;
+
+drop sequence if exists source_type_seq;
+
+drop sequence if exists users_seq;
 

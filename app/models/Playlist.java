@@ -5,10 +5,12 @@ package models;
  */
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CreatedTimestamp;
 import play.data.validation.Constraints;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +26,8 @@ import java.util.UUID;
 public class Playlist extends Model {
 
     @ManyToOne
+    @Column(name = "owner_id")
+    @Constraints.Required
     private Users owner;
 
     @Id
@@ -37,7 +41,8 @@ public class Playlist extends Model {
     private String uuid;
 
     @Constraints.Required
-    private long createTime;
+    @CreatedTimestamp
+    private Timestamp createTime;
 
     private boolean isPrivate = false;
 
@@ -50,12 +55,13 @@ public class Playlist extends Model {
 
     private Playlist() {}
 
-    public static Playlist getNewPlaylist(@Nonnull String title) {
+    public static Playlist getNewPlaylist(@Nonnull String title, @Nonnull Users owner) {
         if (title.isEmpty()) {
             return new Playlist();
         }
         Playlist playlist = new Playlist();
-        playlist.title = title;
+        playlist.owner = owner;
+        playlist.title = title; // Title should be checked for uniqueness among the same user
         playlist.uuid = UUID.randomUUID().toString();
         playlist.isPrivate = false;
         return playlist;
@@ -65,14 +71,17 @@ public class Playlist extends Model {
         listItems.add(item);
         return 0;
     }
-/*
-    public Users getOwner() { return owner; }*/
+
+    @PrePersist
+
+
+    public Users getOwner() { return owner; }
 
     public boolean isPrivate() {
         return isPrivate;
     }
 
-    public long getCreateTime() {
+    public Timestamp getCreateTime() {
         return createTime;
     }
 
