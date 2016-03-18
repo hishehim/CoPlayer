@@ -29,7 +29,7 @@ public class Users extends Model{
     @Column(unique = true)
     public String password_hash;
 
-    public static Model.Finder<Long,Users> find = new Model.Finder<Long, Users>(Users.class);
+    public static Finder<Long,Users> find = new Model.Finder<Long, Users>(Users.class);
 
     public boolean authenticate (String password) {return BCrypt.checkpw(password,this.password_hash);}
 
