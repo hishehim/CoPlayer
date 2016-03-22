@@ -11,6 +11,7 @@
 /.classpath
 /.idea
 /.idea_modules
+/.sbtserver
 /.project
 /.settings
 /.target
