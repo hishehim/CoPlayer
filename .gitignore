@@ -6,10 +6,13 @@
 .cache
 .eclipse
 .history
+/*.log
+/*.log.*
 /*.iml
 /.cache
 /.classpath
 /.idea
+/.sbtserver
 /.idea_modules
 /.project
 /.settings
