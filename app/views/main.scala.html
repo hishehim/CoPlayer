@@ -11,6 +11,21 @@
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     </head>
     <body>
+    @* Display flash messages *@
+    <center>
+        <font color ="green">
+            @if(flash.containsKey("success")) {
+            <p>Success Flash Message:</p>
+            @flash.get("success")
+            }
+        </font>
+        <font color = "red">
+            @if(flash.containsKey("error")) {
+            <p>Error Flash Message:</p>
+            @flash.get("error")
+            }
+        </font>
+    </center>
         @content
     </body>
 </html>
