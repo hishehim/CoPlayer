@@ -1,7 +1,4 @@
 $.validator.setDefaults({
-    submitHandler: function() {
-        alert("submitted!");
-    }
 });
 
 $().ready(function() {
@@ -10,7 +7,8 @@ $().ready(function() {
         rules: {
             username: {
                 required: true,
-                minlength: 8
+                minlength: 8,
+                maxlength: 15
             },
             password: {
                 required: true,
@@ -29,7 +27,8 @@ $().ready(function() {
         messages: {
             username: {
                 required: "Please enter a username",
-                minlength: "Your username must consist of at least 8 characters"
+                minlength: "Your username must consist of at least 8 characters",
+                maxlength: "The username should consist of less than 15 characters"
             },
             password: {
                 required: "Please provide a password",

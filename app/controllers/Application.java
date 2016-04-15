@@ -13,7 +13,7 @@ import static play.data.Form.form;
 
 public class Application extends Controller {
 
-    final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]$";
+    final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{8,15}$";
     final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
     public Result index() {
