@@ -6,6 +6,7 @@ package models;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
+import com.google.common.io.BaseEncoding;
 import play.data.validation.Constraints;
 
 import javax.annotation.Nonnull;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Random;
 
 
 @Table(
@@ -24,6 +25,12 @@ import java.util.UUID;
 
 @Entity
 public class Playlist extends Model {
+
+    @Transient
+    private static final Random random = new Random();
+
+    @Transient
+    private static final int MAX_TRIES = 2;
 
     @ManyToOne
     @Column(name = "owner_id")
@@ -36,9 +43,10 @@ public class Playlist extends Model {
     @Constraints.Required
     private String title;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 16)
     @Constraints.Required
-    private String uuid;
+    @Constraints.MaxLength(16)
+    private String uid;
 
     @Constraints.Required
     @CreatedTimestamp
@@ -62,8 +70,17 @@ public class Playlist extends Model {
         Playlist playlist = new Playlist();
         playlist.owner = owner;
         playlist.title = title; // Title should be checked for uniqueness among the same user
-        playlist.uuid = UUID.randomUUID().toString();
         playlist.isPrivate = false;
+
+        int failCount = 0;
+        do {
+            playlist.uid= genUID();
+            if (find.where().eq("uid", playlist.uid).findUnique() != null) {
+                return playlist;
+            }
+            failCount++;
+        } while (failCount <= MAX_TRIES);
+
         return playlist;
     }
 
@@ -85,8 +102,8 @@ public class Playlist extends Model {
         return createTime;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getUid() {
+        return uid;
     }
 
     public long getId() {
@@ -105,5 +122,10 @@ public class Playlist extends Model {
         return listItems;
     }
 
+    private static String genUID() {
+        byte[] byteArr = new byte[8];
+        random.nextBytes(byteArr);
+        return BaseEncoding.base64Url().encode(byteArr);
+    }
 
 }

@@ -1,0 +1,11 @@
+<ul>
+    <li><a href="@routes.Application.index()">Home</a></li>
+    @if( session.containsKey("username") ) {
+
+        <li><p>Hello, @session.get("username")</p>
+            <a href="@routes.Application.logout()">Logout</a> </li>
+    } else {
+        <li><a href="@routes.Application.login()">Login</a></li>
+        <li><a href="@routes.Application.signup()">Sign Up!</a></li>
+    }
+</ul>
