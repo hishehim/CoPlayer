@@ -1,8 +1,11 @@
 package controllers;
 
 import models.Playlist;
+import models.Users;
+import play.libs.Json;
 import play.mvc.*;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,5 +35,18 @@ public class Playlists extends Controller {
         }
         Playlist playlist = Playlist.find.byId(playlistId);
         return ok(views.html.playlists.singlePlaylist.render());
+    }
+
+    public Result getPublicList() {
+        return ok(Json.toJson(Playlist.find.where().eq("is_private", false).findList()));
+    }
+
+    public Result create(@Nonnull String title, @Nonnull Users owner) {
+        Playlist nPlaylist = Playlist.getNewPlaylist(title, owner);
+        if (nPlaylist == null) {
+            // too many collision on ID gen, need to expand ID length
+            // return bad request with unable to generate new playlist error
+        }
+        return showList(null);
     }
 }

@@ -13,6 +13,7 @@ import static play.data.Form.form;
 
 public class Application extends Controller {
 
+
     final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]$";
     final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
@@ -33,6 +34,7 @@ public class Application extends Controller {
         /***need to set up flash message on main***/
         if (user != null && user.authenticate(password)){
             session("user_id",String.valueOf(user.id));
+            session("username",user.username);
             flash("success","Welcome back " +user.username);
         }else{
             flash("error", "Invalid login. Please check your username and password");

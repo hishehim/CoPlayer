@@ -7,11 +7,11 @@ create table playlist (
   id                        bigserial not null,
   owner_id                  bigint,
   title                     varchar(255),
-  uuid                      varchar(255),
+  uid                       varchar(16),
   is_private                boolean,
   size                      integer,
   create_time               timestamp not null,
-  constraint uq_playlist_uuid unique (uuid),
+  constraint uq_playlist_uid unique (uid),
   constraint uq_playlist_1 unique (owner_id,title),
   constraint pk_playlist primary key (id))
 ;
