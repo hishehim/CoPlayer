@@ -2,6 +2,7 @@
 *.iml
 *.ipr
 *.iws
+*.sbtserver*
 .DS_Store
 .cache
 .eclipse
@@ -27,11 +28,14 @@
 /out
 /project/*-shim.sbt
 bin/
+conf/logback.xml
 dist
 logs
 out
 project/project
 project/target
+project/play-fork-run.sbt
+project/sbt-ui.sbt
 server.pid
 target/
 test-result
