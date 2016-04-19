@@ -13,6 +13,7 @@ GET     /signup                     controllers.Application.signup()
 POST    /signup                     controllers.Application.newUser()
 
 GET     /logout                     controllers.Application.logout()
+GET     /newPlaylist                controllers.Application.createPlaylist()
 
 GET     /Users/:id                  controllers.UserProfile.showProfile(id: Long)
 
