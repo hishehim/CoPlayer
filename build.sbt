@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   javaWs,
   "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
   "org.webjars" % "bootstrap" % "3.3.6",
-  "org.mindrot" % "jbcrypt" % "0.3m"
+  "org.mindrot" % "jbcrypt" % "0.3m",
+  "org.json" % "org.json" % "chargebee-1.0"
 )
 
 // Play provides two styles of routers, one expects its actions to be injected, the
@@ -20,4 +21,4 @@ libraryDependencies ++= Seq(
 routesGenerator := InjectedRoutesGenerator
 
 
-fork in run := true
+//fork in run := true

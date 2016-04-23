@@ -13,8 +13,7 @@ import static play.data.Form.form;
 
 public class Application extends Controller {
 
-
-    final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]$";
+    final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{4,40}$";
     final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
     public Result index() {
@@ -45,14 +44,13 @@ public class Application extends Controller {
     }
 
     public Result logout() {
-        session().remove("user_id");
+        session().clear();
         return redirect(routes.Application.index());
     }
 
     public Result signup(){return ok(views.html.signupform.render(""));}
 
     public Result newUser() {
-
         DynamicForm userForm = form().bindFromRequest();
         if (userForm.hasErrors()) {
             return badRequest(views.html.signupform.render(""));
@@ -87,6 +85,23 @@ public class Application extends Controller {
         flash("success","Welcome new user "+ nUser.username);
         /***need a view page for user profile***/
         return ok(index.render("go to profile page"));
+    }
 
+    /* temp route to playlist edit page */
+    public Result createPlaylist() {
+        return ok(views.html.playlists.editor.render("New Playlist", null));
+    }
+
+
+    /**
+     * Class used for routes in javascript
+     * Refer to http://stackoverflow.com/questions/11133059/play-2-x-how-to-make-an-ajax-request-with-a-common-button
+     * For better explanation
+     * All routes to be used in javascript should go in here
+     * */
+    public Result javascriptRoutes() {
+        response().setContentType("text/javascript");
+        return ok(Routes.javascriptRouter("jsRouter",
+                controllers.api.routes.javascript.PlaylistAPI.getPublicPlaylist()));
     }
 }

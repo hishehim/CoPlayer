@@ -7,12 +7,36 @@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src='@routes.Assets.versioned("javascripts/loadplaylist.js")' async></script>
+        <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
     </head>
 
-    @header()
+    @* HEADER *@
+    <ul>
+        <li><a href="@routes.Application.index()">Home</a></li>
+        <li><a href="@routes.Application.createPlaylist()">New List</a> </li>
+        @if( session.containsKey("username") ) {
+
+        <li><p>Hello, @session.get("username")</p>
+            <a href="@routes.Application.logout()">Logout</a> </li>
+        } else {
+        <li><a href="@routes.Application.login()">Login</a></li>
+        <li><a href="@routes.Application.signup()">Sign Up!</a></li>
+        }
+    </ul>
+    @* END HEADER *@
+
+    @if(flash.containsKey("success")) {
+    @*<p>Success!:</p>*@
+    <p class="text-center alert alert-success">@flash.get("success")</p>
+    } else { @if(flash.containsKey("error")) {
+    @*<p>Error!:</p>*@
+    <p class="text-center alert alert-danger">@flash.get("error")</p>
+    }}
 
     <body>
         @content
     </body>
+
 </html>
