@@ -6,6 +6,8 @@ import play.data.validation.Constraints;
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 
+import static models.CONST.SOURCE.YOUTUBE;
+
 /**
  * Created by Mike on 3/6/2016.
  * Entity for holding information on each playlists item
@@ -18,7 +20,7 @@ import javax.persistence.*;
 public class PlaylistItem extends Model {
 
     @Constraints.Required
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Playlist parentList;
 
     @GeneratedValue
@@ -29,6 +31,7 @@ public class PlaylistItem extends Model {
      * */
     @ManyToOne(cascade = CascadeType.PERSIST)
     @Constraints.Required
+    @Constraints.MaxLength(20)
     private SourceType sourceType;
 
     /**
@@ -58,22 +61,26 @@ public class PlaylistItem extends Model {
 
     public static Finder<Long, PlaylistItem> find = new Finder<Long, PlaylistItem>(PlaylistItem.class);
 
-
     /**
      * Factory method for creating a playlists item. Data are validated here.
-     * @param playlist the playlists this item belongs to.
-     * @param type defines the type of the source.
      * @param link the embedded video link
      * */
-    private static PlaylistItem getNewItem(@Nonnull Playlist playlist,
-                                           @Nonnull String link,
-                                           @Nonnull SourceType type) {
+    public static PlaylistItem getNewItem(@Nonnull String link) {
+        /*
+        Link to be validated on adding to playlist
         if (linkValidation(link, type)) {
             PlaylistItem item = new PlaylistItem(playlist, type, link);
             // link should be validated
             return item;
-        }
-        return new PlaylistItem();
+        }*/
+        PlaylistItem nPlaylistItem = new PlaylistItem();
+        nPlaylistItem.link = link;
+        nPlaylistItem.sourceType = new SourceType(YOUTUBE);
+        return nPlaylistItem;
+    }
+
+    public void setParent(@Nonnull Playlist parent) {
+        this.parentList = parent;
     }
 
     public Playlist getParentList() {
@@ -91,8 +98,15 @@ public class PlaylistItem extends Model {
     /**
      * Ensures that the link being added is a valid format for the source type
      * */
-    private static boolean linkValidation(String link, SourceType type) {
+    public static boolean linkValidation(@Nonnull String link,@Nonnull SourceType type) {
         // TO-DO LATER
+        // DECIDE WHEN TO VALIDATE
         return true;
+    }
+
+    public static SourceType findLinkType(@Nonnull String link) {
+        // for testing, all inks default to youtube
+        // basic link checker goes here
+        return new SourceType(YOUTUBE);
     }
 }

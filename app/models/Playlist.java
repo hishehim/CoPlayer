@@ -18,11 +18,11 @@ import java.util.Random;
 
 
 @Table(
+    name = "playlist",
     // sets a composite unique constraint for user_id and playlists-title
     uniqueConstraints =
         @UniqueConstraint(columnNames = {"owner_id", "title"})
 )
-
 @Entity
 public class Playlist extends Model {
 
@@ -32,34 +32,35 @@ public class Playlist extends Model {
     @Transient
     private static final int MAX_TRIES = 2;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "owner_id")
     @Constraints.Required
     private Users owner;
 
-    @Id
-    private long id;
-
     @Constraints.Required
+    @Column(name = "title")
     private String title;
 
-    @Column(unique = true, length = 16)
-    @Constraints.Required
-    @Constraints.MaxLength(16)
-    private String uid;
+    @Id
+    @Constraints.MaxLength(21)
+    @Column(name = "id")
+    private String id;
 
     @Constraints.Required
     @CreatedTimestamp
     private Timestamp createTime;
 
+    @Column(name = "is_private")
     private boolean isPrivate = false;
 
+    @Column(name = "size")
     private int size = 0;
 
-    @OneToMany(mappedBy = "parentList", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentList", cascade = CascadeType.ALL)
     List<PlaylistItem> listItems = new ArrayList<>();
 
-    public static Finder<Long, Playlist> find = new Finder<Long, Playlist>(Playlist.class);
+    /* Used to find entire object */
+    public static Finder<String, Playlist> find = new Finder<String, Playlist>(Playlist.class);
 
     private Playlist() {}
 
@@ -74,8 +75,8 @@ public class Playlist extends Model {
 
         int failCount = 0;
         do {
-            playlist.uid= genUID();
-            if (find.where().eq("uid", playlist.uid).findUnique() != null) {
+            playlist.id = genUID();
+            if (find.where().eq("id", playlist.id).findUnique() != null) {
                 return playlist;
             }
             failCount++;
@@ -84,13 +85,13 @@ public class Playlist extends Model {
         return playlist;
     }
 
-    public int addItem(@Nonnull PlaylistItem item) {
-        listItems.add(item);
-        return 0;
+    public PlaylistItem addItem(@Nonnull String url) {
+        PlaylistItem nItem = PlaylistItem.getNewItem(url);
+        listItems.add(nItem);
+        return nItem;
     }
 
     @PrePersist
-
 
     public Users getOwner() { return owner; }
 
@@ -102,11 +103,7 @@ public class Playlist extends Model {
         return createTime;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -123,7 +120,7 @@ public class Playlist extends Model {
     }
 
     private static String genUID() {
-        byte[] byteArr = new byte[8];
+        byte[] byteArr = new byte[9];
         random.nextBytes(byteArr);
         return BaseEncoding.base64Url().encode(byteArr);
     }

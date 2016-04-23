@@ -4,20 +4,18 @@
 # --- !Ups
 
 create table playlist (
-  id                        bigserial not null,
+  id                        varchar(255) not null,
   owner_id                  bigint,
   title                     varchar(255),
-  uid                       varchar(16),
   is_private                boolean,
   size                      integer,
   create_time               timestamp not null,
-  constraint uq_playlist_uid unique (uid),
   constraint uq_playlist_1 unique (owner_id,title),
   constraint pk_playlist primary key (id))
 ;
 
 create table playlist_item (
-  parent_list_id            bigint,
+  parent_list_id            varchar(255),
   id                        bigint,
   source_type_source_type   varchar(255),
   link                      varchar(255),
