@@ -1,13 +1,10 @@
 package controllers.api;
 
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Model;
-import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import models.Playlist;
 import org.json.JSONException;
 import org.json.JSONObject;
-import play.Routes;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -16,14 +13,12 @@ import play.mvc.Result;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static com.avaje.ebean.Ebean.createSqlQuery;
-import static javafx.beans.binding.Bindings.select;
-import static sun.misc.MessageUtils.where;
 
 /**
  * Created by linmh on 4/20/2016.
  */
 public class PlaylistAPI extends Controller {
+
     public Result getPlaylist(@Nonnull String uid) {
         Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
         if (playlist != null) {

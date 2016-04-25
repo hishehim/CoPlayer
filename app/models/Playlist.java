@@ -10,6 +10,7 @@ import com.google.common.io.BaseEncoding;
 import play.data.validation.Constraints;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -29,9 +30,6 @@ public class Playlist extends Model {
     @Transient
     private static final Random random = new Random();
 
-    @Transient
-    private static final int MAX_TRIES = 2;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "owner_id")
     @Constraints.Required
@@ -42,7 +40,7 @@ public class Playlist extends Model {
     private String title;
 
     @Id
-    @Constraints.MaxLength(21)
+    @Constraints.MaxLength(12)
     @Column(name = "id")
     private String id;
 
@@ -64,6 +62,7 @@ public class Playlist extends Model {
 
     private Playlist() {}
 
+    @Nullable
     public static Playlist getNewPlaylist(@Nonnull String title, @Nonnull Users owner) {
         if (title.isEmpty()) {
             return new Playlist();
@@ -76,22 +75,21 @@ public class Playlist extends Model {
         int failCount = 0;
         do {
             playlist.id = genUID();
-            if (find.where().eq("id", playlist.id).findUnique() != null) {
+            if (find.where().eq("id", playlist.id).findRowCount() == 0) {
                 return playlist;
             }
             failCount++;
-        } while (failCount <= MAX_TRIES);
+        } while (failCount <= 2);
 
-        return playlist;
+        return null;
     }
 
+    @Nullable
     public PlaylistItem addItem(@Nonnull String url) {
         PlaylistItem nItem = PlaylistItem.getNewItem(url);
         listItems.add(nItem);
         return nItem;
     }
-
-    @PrePersist
 
     public Users getOwner() { return owner; }
 

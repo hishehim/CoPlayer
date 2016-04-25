@@ -52,16 +52,16 @@ public class Playlists extends Controller {
         DynamicForm playlistForm = form().bindFromRequest();
         if (playlistForm.hasErrors()) {
             flash("error", "Invalid form");
-            return badRequest(request().getHeader("referer"));
+            return redirect(request().getHeader("referer"));
         }
         String title = playlistForm.get("title");
         if (title == null || title.isEmpty()) {
             flash("error", "Invalid title");
-            return badRequest(request().getHeader("referer"));
+            return redirect(request().getHeader("referer"));
         }
         if (!Playlist.find.where().eq("title", title).findList().isEmpty()) {
             flash("error", "title already in use");
-            return badRequest(request().getHeader("referer"));
+            return redirect(request().getHeader("referer"));
         }
         long userID;
 
@@ -70,17 +70,18 @@ public class Playlists extends Controller {
         } catch (NumberFormatException e) {
             // error parse user ID as long
             flash("error", "Something is wrong with your session. Plase relog!");
-            return badRequest(request().getHeader("referer"));
+            return redirect(request().getHeader("referer"));
         }
 
         Users user = Users.find.byId(Long.parseLong(session("user_id")));
         Playlist nPlaylist = Playlist.getNewPlaylist(title, user);
 
         if (nPlaylist == null) {
-            flash("error", "too many collisions"); // REMOVE ON DEPLOY
+            flash("error", "could not create new playlist"); // REMOVE ON DEPLOY
             // too many collision on ID gen, need to expand ID length
             // return bad request with unable to generate new playlist error
-            return internalServerError(request().getHeader("referer"));
+
+            return redirect(request().getHeader("referer"));
         }
         nPlaylist.save();
         flash("success", "New playlist created!");

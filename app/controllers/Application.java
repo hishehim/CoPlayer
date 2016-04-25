@@ -1,10 +1,11 @@
 package controllers;
 
-import play.*;
 import play.data.DynamicForm;
 import play.mvc.*;
+import play.routing.Router;
+import play.routing.JavaScriptReverseRouter;
+//import play.Routes;
 
-import views.html.*;
 import models.Users;
 
 import java.util.regex.Pattern;
@@ -17,7 +18,7 @@ public class Application extends Controller {
     final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
     public Result index() {
-        return ok(index.render("Your new application is ready."));
+        return ok(views.html.index.render("CoPlay"));
     }
     public Result getlogin() {return ok(views.html.login.render(""));}
 
@@ -40,7 +41,7 @@ public class Application extends Controller {
             return redirect(routes.Application.getlogin());
         }
         /***need a view page for user profile***/
-        return ok(index.render("go to profile page"));
+        return ok(views.html.index.render("go to profile page"));
     }
 
     public Result logout() {
@@ -84,7 +85,7 @@ public class Application extends Controller {
         nUser.save();
         flash("success","Welcome new user "+ nUser.username);
         /***need a view page for user profile***/
-        return ok(index.render("go to profile page"));
+        return ok(views.html.index.render("go to profile page"));
     }
 
     /* temp route to playlist edit page */
@@ -100,8 +101,13 @@ public class Application extends Controller {
      * All routes to be used in javascript should go in here
      * */
     public Result javascriptRoutes() {
-        response().setContentType("text/javascript");
-        return ok(Routes.javascriptRouter("jsRouter",
-                controllers.api.routes.javascript.PlaylistAPI.getPublicPlaylist()));
+        return ok(JavaScriptReverseRouter.create("jsRouter",
+                controllers.api.routes.javascript.PlaylistAPI.getPublicPlaylist()
+            )
+        );
+        /*        return ok(Routes.javascriptRouter("jsRouter",
+                controllers.api.routes.javascript.PlaylistAPI.getPublicPlaylist()
+            )
+        ).as("text/javascript");*/
     }
 }
