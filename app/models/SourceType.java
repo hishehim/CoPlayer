@@ -1,6 +1,7 @@
 package models;
 
 import com.avaje.ebean.Model;
+import data.CONST;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Entity;

@@ -6,7 +6,7 @@ import play.data.validation.Constraints;
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 
-import static models.CONST.SOURCE.YOUTUBE;
+import static data.CONST.SOURCE.YOUTUBE;
 
 /**
  * Created by Mike on 3/6/2016.
