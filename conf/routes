@@ -13,20 +13,18 @@ GET     /signup                     controllers.Application.signup()
 POST    /signup                     controllers.Application.newUser()
 
 GET     /logout                     controllers.Application.logout()
-GET     /newPlaylist                controllers.Application.createPlaylist()
 
 GET     /Users/:id                  controllers.UserProfile.showProfile(id: Long)
 
 
 # Playlist Pages
-GET     /playlist                   controllers.Playlists.showList(id ?= null)
-POST    /playlist/listUID           controllers.Playlists.addItem(listUID: String)
 POST    /playlist                   controllers.Playlists.create()
+GET     /playlist                   controllers.Playlists.getByUID(id ?= null)
 
-# API
-GET     /api/playlist/public        controllers.api.PlaylistAPI.getPublicPlaylist()
+# JSON
+GET     /json/playlist/public        controllers.json.PlaylistJSON.getPublicPlaylist()
 
-# javascript
+# javascript Router
 GET     /javascriptRoutes           controllers.Application.javascriptRoutes
 
 # Map static resources from the /public folder to the /assets URL path

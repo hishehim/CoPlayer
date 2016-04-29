@@ -1,4 +1,4 @@
-package data;
+package statics;
 
 /**
  * Created by Mike on 3/6/2016.

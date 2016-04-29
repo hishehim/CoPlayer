@@ -12,31 +12,42 @@
         <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
     </head>
 
+
     @* HEADER *@
     <ul>
         <li><a href="@routes.Application.index()">Home</a></li>
-        <li><a href="@routes.Application.createPlaylist()">New List</a> </li>
         @if( session.containsKey("username") ) {
-
-        <li><p>Hello, @session.get("username")</p>
-            <a href="@routes.Application.logout()">Logout</a> </li>
+            <li>Hello, @session.get("username")</li>
+            <li><a href="@routes.Application.logout()">Logout</a> </li>
         } else {
         <li><a href="@routes.Application.login()">Login</a></li>
         <li><a href="@routes.Application.signup()">Sign Up!</a></li>
         }
+        <li>
+            <form action="@routes.Playlists.create()" method="post">
+                <input type="text" name="title" class="form-control input-lg"
+                       placeholder="Playlist Title" required>
+                <button>Create</button>
+            </form>
+        </li>
     </ul>
     @* END HEADER *@
 
+
+    <hr>
     @if(flash.containsKey("success")) {
     @*<p>Success!:</p>*@
     <p class="text-center alert alert-success">@flash.get("success")</p>
+    <hr>
     } else { @if(flash.containsKey("error")) {
     @*<p>Error!:</p>*@
     <p class="text-center alert alert-danger">@flash.get("error")</p>
+    <hr>
     }}
 
     <body>
         @content
     </body>
-
+    <hr>
+    @* FOOTER *@
 </html>

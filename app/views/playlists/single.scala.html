@@ -1,0 +1,10 @@
+@(playlist: Playlist)
+
+@main(playlist.getTitle()) {
+<h1>@playlist.getTitle()</h1>
+@* <form action="@routes.Playlists.addItem(UID)" method="post">
+    <label for="url">url:</label>
+    <input type="url" name="name" required placeholder = "link">
+    <button>add</button>
+</form> *@
+}

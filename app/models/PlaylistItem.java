@@ -6,7 +6,7 @@ import play.data.validation.Constraints;
 import javax.annotation.Nonnull;
 import javax.persistence.*;
 
-import static data.CONST.SOURCE.YOUTUBE;
+import static statics.CONST.SOURCE.YOUTUBE;
 
 /**
  * Created by Mike on 3/6/2016.
@@ -19,12 +19,14 @@ import static data.CONST.SOURCE.YOUTUBE;
 @Entity
 public class PlaylistItem extends Model {
 
+    @Id
+    @GeneratedValue
+    protected long id;
+
     @Constraints.Required
     @ManyToOne(fetch = FetchType.LAZY)
-    private Playlist parentList;
+    protected Playlist parentList;
 
-    @GeneratedValue
-    private long id;
 
     /**
      * Identifies the player source
@@ -32,14 +34,13 @@ public class PlaylistItem extends Model {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @Constraints.Required
     @Constraints.MaxLength(20)
-    private SourceType sourceType;
+    protected SourceType sourceType;
 
     /**
      * Embedded video link
      * */
     @Constraints.Required
-    private String link;
-
+    protected String link;
 
     /**
      * used prevent initialization without the use of factory method
@@ -65,7 +66,7 @@ public class PlaylistItem extends Model {
      * Factory method for creating a playlists item. Data are validated here.
      * @param link the embedded video link
      * */
-    public static PlaylistItem getNewItem(@Nonnull String link) {
+    protected static PlaylistItem getNewItem(@Nonnull String link) {
         /*
         Link to be validated on adding to playlist
         if (linkValidation(link, type)) {

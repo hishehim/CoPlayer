@@ -2,9 +2,7 @@ package controllers;
 
 import play.data.DynamicForm;
 import play.mvc.*;
-import play.routing.Router;
 import play.routing.JavaScriptReverseRouter;
-//import play.Routes;
 
 import models.Users;
 
@@ -41,7 +39,9 @@ public class Application extends Controller {
             return redirect(routes.Application.getlogin());
         }
         /***need a view page for user profile***/
-        return ok(views.html.index.render("go to profile page"));
+        /** Mike edit: use redirect so "Confirm Form Resubmission" does not pop up on refresh */
+        return redirect(routes.Application.index());
+        //return ok(views.html.index.render("go to profile page"));
     }
 
     public Result logout() {
@@ -89,25 +89,24 @@ public class Application extends Controller {
     }
 
     /* temp route to playlist edit page */
-    public Result createPlaylist() {
-        return ok(views.html.playlists.editor.render("New Playlist", null));
-    }
-
+    /*public Result createPlaylist() {
+        return ok(views.html.playlists.editor.render();
+    }*/
 
     /**
      * Class used for routes in javascript
-     * Refer to http://stackoverflow.com/questions/11133059/play-2-x-how-to-make-an-ajax-request-with-a-common-button
-     * For better explanation
      * All routes to be used in javascript should go in here
+     * See:
+     *      https://www.playframework.com/documentation/2.5.x/JavaJavascriptRouter#Javascript-Routing
+     * for more detail explaination
+     * Ensure Javascript is added to conf.routes
      * */
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",
-                controllers.api.routes.javascript.PlaylistAPI.getPublicPlaylist()
+                controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
+                routes.javascript.Playlists.getByUID(),
+                routes.javascript.UserProfile.showProfile()
             )
-        );
-        /*        return ok(Routes.javascriptRouter("jsRouter",
-                controllers.api.routes.javascript.PlaylistAPI.getPublicPlaylist()
-            )
-        ).as("text/javascript");*/
+        ).as("text/javascript");
     }
 }

@@ -1,55 +1,47 @@
 package controllers;
 
+import com.avaje.ebean.Ebean;
 import models.Playlist;
-import models.PlaylistItem;
 import models.Users;
+import play.Logger;
 import play.data.DynamicForm;
-import play.libs.Json;
+import play.data.FormFactory;
 import play.mvc.*;
 
-import javax.annotation.Nonnull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static play.data.Form.form;
+import javax.inject.Inject;
+import java.util.regex.Pattern;
 
 /**
  * Created by linmh on 3/18/2016.
  */
 public class Playlists extends Controller {
 
-    /* Temporary method to retrieve a single playlist. Currently using id, will
-     *  be replaced with uuid to make each playlist more obscure to general user */
-    public Result showList(String idString) {
-        String playlistId;
-        if (idString == null) {
-            List<Playlist> publicLists = Playlist.find.where()
-                    .eq("isPrivate", false)
-                    .orderBy("createTime")
-                    .findList();
-            if (publicLists == null) {
-                publicLists = new ArrayList<>();
-            }
-            return ok(views.html.playlists.listall.render(publicLists));
-        }
-        try {
-            playlistId = idString;
-        } catch (NumberFormatException e) {
-            return badRequest("failed");
-        }
-        Playlist playlist = Playlist.find.byId(playlistId);
-        return ok(views.html.playlists.singlePlaylist.render());
-    }
+    private static final Pattern UID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{12,20}$");
 
-    public Result getPublicList() {
-        return ok(Json.toJson(Playlist.find.where().eq("is_private", false).findList()));
+    @Inject
+    private FormFactory formFactory;
+
+    public Result getByUID(String uid) {
+        if (uid == null || uid.isEmpty()) {
+            /* Empty uid should be redirected to main page */
+            return movedPermanently(routes.Application.index());
+        } else if (!UID_PATTERN.matcher(uid).matches()) {
+            return notFound("BAD ID Playlist not found page goes here");
+        }
+
+        Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+        if (playlist == null) {
+            return notFound("NOT FOUND Playlist not found page goes here " + uid);
+        }
+        return ok(views.html.playlists.single.render(playlist));
     }
 
     @Security.Authenticated(UserAuth.class)
     public Result create() {
-        /* CHANGE TYPE WHEN USER ID SWITCH TO UID */
-        DynamicForm playlistForm = form().bindFromRequest();
+        if (formFactory == null) {
+            System.out.println("poop");
+        }
+        DynamicForm playlistForm = formFactory.form().bindFromRequest();
         if (playlistForm.hasErrors()) {
             flash("error", "Invalid form");
             return redirect(request().getHeader("referer"));
@@ -69,32 +61,42 @@ public class Playlists extends Controller {
             userID = Long.parseLong(session("user_id"));
         } catch (NumberFormatException e) {
             // error parse user ID as long
-            flash("error", "Something is wrong with your session. Plase relog!");
+            flash("error", "Something went wrong with your session. Please relog!");
+            // logout()
             return redirect(request().getHeader("referer"));
         }
 
-        Users user = Users.find.byId(Long.parseLong(session("user_id")));
-        Playlist nPlaylist = Playlist.getNewPlaylist(title, user);
-
-        if (nPlaylist == null) {
-            flash("error", "could not create new playlist"); // REMOVE ON DEPLOY
-            // too many collision on ID gen, need to expand ID length
-            // return bad request with unable to generate new playlist error
-
-            return redirect(request().getHeader("referer"));
+        Ebean.beginTransaction();
+        try {
+            Users user = Users.find.byId(Long.parseLong(session("user_id")));
+            /*
+            * Validate user still exist for the entire duration of this transaction
+            * */
+            if (user == null) {
+                // session user info went out of sync with db somehow
+                Logger.error("Playlist.create(): Authenticated user no longer in DB", userID);
+                // force log out ? logout()
+                return internalServerError("User could not be verified");
+            }
+            Playlist nPlaylist = Playlist.getNewPlaylist(title, user);
+            if (nPlaylist == null) {
+                flash("error", "could not create new playlist"); // REMOVE ON DEPLOY
+                // too many collision on ID gen, need to expand ID length
+                // return bad request with unable to generate new playlist error
+                // return redirect(request().getHeader("referer"));
+                return internalServerError("Could not create new playlist");
+            }
+            nPlaylist.save();
+            Ebean.commitTransaction();
+            return redirect(routes.Playlists.getByUID(nPlaylist.getUID()));
+        } finally {
+            Ebean.endTransaction();
         }
-        nPlaylist.save();
-        flash("success", "New playlist created!");
-        return ok(views.html.playlists.editor.render(nPlaylist.getTitle(), nPlaylist.getId()));
     }
 
-    public Result addItem(@Nonnull String listID) {
-        DynamicForm playlistItemForm = form().bindFromRequest();
-        if (playlistItemForm.hasErrors()) {
-            // redirect to else where
-            return badRequest();
-        }
-        PlaylistItem nPlaylistItem = PlaylistItem.getNewItem(playlistItemForm.get("url"));
-        return ok(Json.toJson(nPlaylistItem));
+
+    private Result playlistNotFound() {
+        /* holder for universal playlist not found return page */
+        return notFound("playlist not found page goes here");
     }
 }

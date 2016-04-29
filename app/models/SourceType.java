@@ -1,9 +1,11 @@
 package models;
 
 import com.avaje.ebean.Model;
-import data.CONST;
+import statics.CONST;
+import play.data.validation.Constraints;
 
 import javax.annotation.Nonnull;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -18,9 +20,14 @@ import javax.persistence.Id;
 public class SourceType extends Model {
 
     @Id
+    long id;
+
+    @Constraints.Required
+    @Column(unique = true)
     private String sourceType;
 
     private SourceType() {}
+
     /**
      * The default and the only constructor for SourceType.
      * Takes the enum type CONST.SOURCE to obtain the string presentation of the source type
