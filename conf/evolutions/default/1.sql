@@ -17,18 +17,12 @@ create table playlist (
 
 create table playlist_item (
   id                            bigserial not null,
-  parent_list_id                bigint,
-  source_type_id                bigint,
-  link                          varchar(255),
-  constraint uq_playlist_item_parent_list_id_id unique (parent_list_id,id),
-  constraint pk_playlist_item primary key (id)
-);
-
-create table source_type (
-  id                            bigserial not null,
+  parent_id                     bigint,
   source_type                   varchar(255),
-  constraint uq_source_type_source_type unique (source_type),
-  constraint pk_source_type primary key (id)
+  link                          varchar(255),
+  title                         varchar(255),
+  constraint uq_playlist_item_parent_id_id unique (parent_id,id),
+  constraint pk_playlist_item primary key (id)
 );
 
 create table users (
@@ -45,11 +39,8 @@ create table users (
 alter table playlist add constraint fk_playlist_owner_id foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_playlist_owner_id on playlist (owner_id);
 
-alter table playlist_item add constraint fk_playlist_item_parent_list_id foreign key (parent_list_id) references playlist (id) on delete restrict on update restrict;
-create index ix_playlist_item_parent_list_id on playlist_item (parent_list_id);
-
-alter table playlist_item add constraint fk_playlist_item_source_type_id foreign key (source_type_id) references source_type (id) on delete restrict on update restrict;
-create index ix_playlist_item_source_type_id on playlist_item (source_type_id);
+alter table playlist_item add constraint fk_playlist_item_parent_id foreign key (parent_id) references playlist (id) on delete restrict on update restrict;
+create index ix_playlist_item_parent_id on playlist_item (parent_id);
 
 
 # --- !Downs
@@ -57,17 +48,12 @@ create index ix_playlist_item_source_type_id on playlist_item (source_type_id);
 alter table if exists playlist drop constraint if exists fk_playlist_owner_id;
 drop index if exists ix_playlist_owner_id;
 
-alter table if exists playlist_item drop constraint if exists fk_playlist_item_parent_list_id;
-drop index if exists ix_playlist_item_parent_list_id;
-
-alter table if exists playlist_item drop constraint if exists fk_playlist_item_source_type_id;
-drop index if exists ix_playlist_item_source_type_id;
+alter table if exists playlist_item drop constraint if exists fk_playlist_item_parent_id;
+drop index if exists ix_playlist_item_parent_id;
 
 drop table if exists playlist cascade;
 
 drop table if exists playlist_item cascade;
-
-drop table if exists source_type cascade;
 
 drop table if exists users cascade;
 

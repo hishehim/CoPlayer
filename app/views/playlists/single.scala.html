@@ -1,10 +1,33 @@
-@(playlist: Playlist)
+@(playlist: Playlist, isOwner: Boolean)
 
-@main(playlist.getTitle()) {
-<h1>@playlist.getTitle()</h1>
-@* <form action="@routes.Playlists.addItem(UID)" method="post">
-    <label for="url">url:</label>
-    <input type="url" name="name" required placeholder = "link">
-    <button>add</button>
-</form> *@
+@import statics.SourceType
+
+@main(playlist.getTitle(), scripts) {
+    <h1>@playlist.getTitle()</h1>
+    <hr>
+    @if(isOwner){
+    <form action="@routes.Playlists.addItem(playlist.getUID())" method="post">
+        <label>Video URL</label>
+        @* <!--TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
+         --> *@
+        <input id="user_url" type="url" name="url" placeholder="link to source" required>
+        <select id="srcTypeSelector" name="source_type">
+            @* <!--TODO: AUTO-DETECT DOMAIN OF GIVEN LINK AND SWITCH OPTIONS ACCORDINGLY
+             --> *@
+            @for(srcType <- SourceType.sourceList){
+                <option value="@srcType">@srcType</option>
+            }
+        </select>
+        <button>Add</button>
+    </form>
+    <hr>
+    }
+    <table id="pl-item-container">
+    @for(item <- playlist.getListItems()) {
+        <tr id="new item @item.getTitle()">
+            @*<td>@item.getTitle()</td>*@
+            <td>@item.getLink()</td>
+        </tr>
+    }
+    </table>
 }

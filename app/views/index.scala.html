@@ -1,5 +1,11 @@
 @(message: String)
 
-@main("Embedded Playlist") {
+@scripts = {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
+    <script src='@routes.Assets.versioned("javascripts/loadplaylist.js")' async></script>
+}
+
+@main("Embedded Playlist", scripts) {
     <div id="playlist-main-list"></div>
 }

@@ -12,10 +12,11 @@ import static play.data.Form.form;
 
 public class Application extends Controller {
 
-    final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{4,40}$";
-    final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+    private final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{4,40}$";
+    private final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
 
     public Result index() {
+        System.out.println(request().host());
         return ok(views.html.index.render("CoPlay"));
     }
     public Result getlogin() {return ok(views.html.login.render(""));}
@@ -85,13 +86,8 @@ public class Application extends Controller {
         nUser.save();
         flash("success","Welcome new user "+ nUser.username);
         /***need a view page for user profile***/
-        return ok(views.html.index.render("go to profile page"));
+        return redirect(routes.Application.index());
     }
-
-    /* temp route to playlist edit page */
-    /*public Result createPlaylist() {
-        return ok(views.html.playlists.editor.render();
-    }*/
 
     /**
      * Class used for routes in javascript
@@ -100,6 +96,10 @@ public class Application extends Controller {
      *      https://www.playframework.com/documentation/2.5.x/JavaJavascriptRouter#Javascript-Routing
      * for more detail explaination
      * Ensure Javascript is added to conf.routes
+     *
+     * See:
+     *      http://stackoverflow.com/questions/26747536/play-framework-template-that-is-actually-a-js-file
+     * For when dynamic JS needs to be built
      * */
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",

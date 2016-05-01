@@ -1,9 +1,13 @@
+/* Create simple div element with text in it */
 function createTextDiv(text) {
     var textBox = document.createElement("div");
     textBox.appendChild(document.createTextNode(text));
     return textBox;
 }
 
+/* Create simple div with anchor embedded inside
+* May be changed to simple anchor element in the future
+*/
 function createHyperLink(text, link, type) {
     var rootDiv = document.createElement("div");
     var anchor = document.createElement("A");
@@ -13,6 +17,7 @@ function createHyperLink(text, link, type) {
     return rootDiv;
 }
 
+/* Function to create the container that holds each playlist data in index page */
 function createListContainer(playlist) {
     var playlistContainer = document.createElement("div");
     playlistContainer.id = "playlist-" + playlist.id;
@@ -27,15 +32,10 @@ function createListContainer(playlist) {
         createHyperLink(playlist.owner, jsr.url));
 
     playlistContainer.appendChild(createTextDiv(playlist.size.toString().concat(" links")));
-/*    for (var key in playlist) {
-        var para = document.createElement("P");
-        var text = document.createTextNode(key + ': ' + playlist[key]);
-        para.appendChild(text);
-        playlistContainer.appendChild(para);
-    }*/
     return playlistContainer;
 }
 
+/* Function to populate the list of playlists */
 function loadPlaylist() {
     /* For AJAX call documentation:
     * http://api.jquery.com/jquery.ajax/
@@ -44,12 +44,15 @@ function loadPlaylist() {
     jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist().ajax(
         {
         dataType: "json",
+        // success is the callback function for successful ajax call
         success: function(data) {
              // get target container to populate the list
              var listView = document.getElementById("playlist-main-list");
             // loop through json array and append it to the main container
             $.each(data, function(i, obj) {
-               listView.appendChild(createListContainer(obj));
+                if (obj !== undefined || obj !== null) {
+                    listView.appendChild(createListContainer(obj));
+                }
             });
             console.log(data);
             }
@@ -60,6 +63,5 @@ function loadPlaylist() {
 }
 
 $(document).ready(function() {
-   // loads the playlist
    loadPlaylist();
 });

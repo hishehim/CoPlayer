@@ -32,36 +32,36 @@ public class Playlist extends Model {
 
     @Id
     @GeneratedValue
-    protected long id;
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "owner_id")
     @Constraints.Required
-    protected Users owner;
+    private Users owner;
 
     @Constraints.Required
     @Column(name = "title")
-    protected String title;
+    private String title;
 
     @Constraints.MaxLength(20)
     @Column(name = "uid")
-    protected String uid;
+    private String uid;
 
     @Constraints.Required
     @CreatedTimestamp
-    protected Timestamp createTime;
+    private Timestamp createTime;
 
     @Column(name = "is_private")
-    protected boolean isPrivate = false;
+    private boolean isPrivate = false;
 
     @Column(name = "size")
-    protected int size = 0;
+    private int size = 0;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentList", cascade = CascadeType.ALL)
-    protected List<PlaylistItem> listItems = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<PlaylistItem> listItems = new ArrayList<>();
 
     /* Used to find entire object */
-    public static Finder<String, Playlist> find = new Finder<String, Playlist>(Playlist.class);
+    public static final Finder<String, Playlist> find = new Finder<String, Playlist>(Playlist.class);
 
     private Playlist() {}
 
@@ -75,27 +75,16 @@ public class Playlist extends Model {
         playlist.title = title; // Title should be checked for uniqueness among the same user
         playlist.isPrivate = false;
 
-        int failCount = 0;
-        do {
+        /*
+        * Calculated collision rate with half full database is 0.5^4 ~= 6%
+        * */
+        for (int i = 0; i < 4; i++){
             playlist.uid = genUID();
-            if (find.where().eq("id", playlist.id).findRowCount() == 0) {
+            if (find.where().eq("uid", playlist.uid).findRowCount() == 0) {
                 return playlist;
             }
-            failCount++;
-        } while (failCount <= 3);
-
+        }
         return null;
-    }
-
-    /**
-     * Final check should be done here, as last line of validation
-     * If not, the calling method should be the sole calling method where the check is made
-     * */
-    @Nullable
-    public PlaylistItem addItem(@Nonnull String url) {
-        PlaylistItem nItem = PlaylistItem.getNewItem(url);
-        listItems.add(nItem);
-        return nItem;
     }
 
     public long getID() { return id; }
@@ -122,6 +111,10 @@ public class Playlist extends Model {
         return size;
     }
 
+    public void increaseSize() { size++; }
+
+    public void decreaseSize() { size--; }
+
     public List<PlaylistItem> getListItems() {
         return listItems;
     }
@@ -131,8 +124,10 @@ public class Playlist extends Model {
         * 6 bits = one base 64 char (8 bits)
         * Conversion from byte to base64 is 3:4
         *   AKA every 3 bytes = 4 chars in base 64
+        * Current 15-byte generates list id of length 20
+        * TODO: make ID length random within certain range? Increases ID pool = less collision
         * */
-        byte[] byteArr = new byte[9];
+        byte[] byteArr = new byte[15];
         random.nextBytes(byteArr);
         return BaseEncoding.base64Url().encode(byteArr);
     }
