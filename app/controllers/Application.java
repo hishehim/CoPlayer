@@ -94,7 +94,7 @@ public class Application extends Controller {
      * All routes to be used in javascript should go in here
      * See:
      *      https://www.playframework.com/documentation/2.5.x/JavaJavascriptRouter#Javascript-Routing
-     * for more detail explaination
+     * for more detail explanation
      * Ensure Javascript is added to conf.routes
      *
      * See:

@@ -1,11 +1,15 @@
-@(playlist: Playlist, isOwner: Boolean)
+@(playlist: Playlist, isOwner: Boolean = false)
 
 @import statics.SourceType
 
-@main(playlist.getTitle(), scripts) {
+@main(playlist.getTitle()) {
     <h1>@playlist.getTitle()</h1>
-    <hr>
     @if(isOwner){
+    <form action="@routes.Playlists.remove()" method="post">
+        <input type="hidden" name="pl-uid" value="@playlist.getUID()">
+        <button>delete</button>
+    </form>
+    <hr>
     <form action="@routes.Playlists.addItem(playlist.getUID())" method="post">
         <label>Video URL</label>
         @* <!--TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
@@ -20,14 +24,22 @@
         </select>
         <button>Add</button>
     </form>
+    }
     <hr>
-    }
     <table id="pl-item-container">
-    @for(item <- playlist.getListItems()) {
-        <tr id="new item @item.getTitle()">
-            @*<td>@item.getTitle()</td>*@
-            <td>@item.getLink()</td>
-        </tr>
-    }
+        @for(item <- playlist.getListItems()) {
+            <tr id="new item @item.getTitle()">
+                @*<td>@item.getTitle()</td>*@
+                <td>@item.getLink()</td>
+                @if(isOwner){
+                    <td>
+                        <form action="@routes.Playlists.removeItem(playlist.getUID())" method="post">
+                            <input type="hidden" name="it-id" value="@item.getID()">
+                            <button>Delete</button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
     </table>
 }

@@ -125,6 +125,10 @@ public class PlaylistItem extends Model {
         return nPlaylistItem;
     }
 
+    public long getID() {
+        return id;
+    }
+
     public Playlist getParent() {
         return parent;
     }

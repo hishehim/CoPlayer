@@ -45,7 +45,7 @@ public class Playlists extends Controller {
         DynamicForm playlistForm = formFactory.form().bindFromRequest();
         if (playlistForm.hasErrors()) {
             flash("error", "Invalid form");
-            return redirect(request().getHeader("referer"));
+            return badRequest();
         }
         String title = playlistForm.get("title");
         if (title == null || title.isEmpty()) {
@@ -96,6 +96,37 @@ public class Playlists extends Controller {
     }
 
     @Security.Authenticated(UserAuth.class)
+    public Result remove() {
+        DynamicForm form = formFactory.form().bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest();
+        }
+        String uid = form.get("pl-uid");
+
+        long userID = getSessionUsrId();
+
+        Ebean.beginTransaction();
+        try {
+            Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+            if (playlist == null) {
+                return playlistNotFound();
+            }
+            if (playlist.getOwner().id != userID) {
+            /*
+            * TODO separate normal error from AUTHENTICATION error
+            * */
+                flash("error", "You're not the owner of the playlist");
+                return unauthorized();
+            }
+            playlist.delete();
+            Ebean.commitTransaction();
+        } finally {
+            Ebean.endTransaction();
+        }
+        return redirect(routes.UserProfile.showProfile(userID));
+    }
+
+    @Security.Authenticated(UserAuth.class)
     public Result addItem(String playlistUID) {
         DynamicForm nItemForm = formFactory.form().bindFromRequest();
         if (nItemForm.hasErrors()) {
@@ -125,11 +156,13 @@ public class Playlists extends Controller {
                 return notFound("Playlist does not exist");
             }
             if (!(playlist.getOwner().id == userID)) {
-                flash("error", "You are not the owner of this playlist! Your attempt has been logged");
-                String logMsg = "User " + session("user_id") + " tried to access playlist " +
-                        playlistUID + " which belongs to user " + playlist.getOwner().id;
-                Logger.info(logMsg);
-                return redirect(request().getHeader("referer"));
+                /*
+                 * flash("error", "You are not the owner of this playlist! Your attempt has been logged");
+                 * String logMsg = "User " + session("user_id") + " tried to access playlist " +
+                 * playlistUID + " which belongs to user " + playlist.getOwner().id;
+                 * Logger.info(logMsg);
+                 */
+                return unauthorized();
             }
             PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcType);
             playlist.increaseSize();
@@ -140,6 +173,41 @@ public class Playlists extends Controller {
             Ebean.endTransaction();
         }
         return redirect(routes.Playlists.getByUID(playlistUID));
+    }
+
+    @Security.Authenticated(UserAuth.class)
+    public Result removeItem(String uid) {
+        DynamicForm itemForm = formFactory.form().bindFromRequest();
+        if (itemForm.hasErrors()) {
+            return badRequest();
+        }
+        long itemID;
+        try {
+            itemID = Long.parseLong(itemForm.get("it-id"));
+        } catch (NumberFormatException ex) {
+            return badRequest();
+        }
+        long userId = getSessionUsrId();
+
+        Ebean.beginTransaction();
+        try {
+            Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+            if (playlist == null) {
+                return notFound();
+            }
+            if (playlist.getOwner().id != userId) {
+                return unauthorized();
+            }
+            PlaylistItem playlistItem = PlaylistItem.find.byId(itemID);
+            if (playlistItem == null) {
+                return notFound();
+            }
+            playlistItem.delete();
+            Ebean.commitTransaction();
+        } finally {
+            Ebean.endTransaction();
+        }
+        return redirect(routes.Playlists.getByUID(uid));
     }
 
     private void getRedirectURL() {
