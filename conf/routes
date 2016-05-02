@@ -5,6 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+# User Pages
 GET     /login                      controllers.Application.getlogin()
 POST    /login                      controllers.Application.login()
 
@@ -14,6 +15,20 @@ POST    /signup                     controllers.Application.newUser()
 GET     /logout                     controllers.Application.logout()
 
 GET     /Users/:id                  controllers.UserProfile.showProfile(id: Long)
+
+
+# Playlist Pages
+GET     /playlist                   controllers.Playlists.getByUID(id ?= null)
+POST    /playlist                   controllers.Playlists.create()
+POST    /playlist/remove            controllers.Playlists.remove()
+POST    /playlist/:pl/addItem       controllers.Playlists.addItem(pl: String)
+POST    /playlist/:pl/removeItem    controllers.Playlists.removeItem(pl: String)
+
+# JSON
+GET     /json/playlist/public       controllers.json.PlaylistJSON.getPublicPlaylist()
+
+# javascript Router
+GET     /javascriptRoutes           controllers.Application.javascriptRoutes
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

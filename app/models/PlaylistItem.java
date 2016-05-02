@@ -2,6 +2,7 @@ package models;
 
 import com.avaje.ebean.Model;
 import play.data.validation.Constraints;
+import statics.SourceType;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
@@ -12,24 +13,28 @@ import javax.persistence.*;
  */
 @Table(
         uniqueConstraints =
-                @UniqueConstraint(columnNames = {"parent_list_id","id"})
+                @UniqueConstraint(columnNames = {"parent_id","id"})
 )
 @Entity
 public class PlaylistItem extends Model {
 
-    @Constraints.Required
-    @ManyToOne
-    private Playlist parentList;
-
+    @Id
     @GeneratedValue
-    private long id;
+    protected long id;
+
+    @Constraints.Required
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "parent_id")
+    private Playlist parent;
 
     /**
      * Identifies the player source
      * */
     @ManyToOne(cascade = CascadeType.PERSIST)
     @Constraints.Required
-    private SourceType sourceType;
+    @Constraints.MaxLength(40)
+    @Column(name = "source_type")
+    private String sourceType;
 
     /**
      * Embedded video link
@@ -37,6 +42,8 @@ public class PlaylistItem extends Model {
     @Constraints.Required
     private String link;
 
+    @Constraints.Required
+    private String title;
 
     /**
      * used prevent initialization without the use of factory method
@@ -44,44 +51,94 @@ public class PlaylistItem extends Model {
      */
     private PlaylistItem() {}
 
-    /**
+/*    *//**
      * Default private constructor used to create a playlists item
      * @param parentList the playlists this item belongs to.
      * @param type defines the type of the source.
      * @param link the embedded video link
-     * */
+     * *//*
     private PlaylistItem(Playlist parentList, SourceType type, String link) {
-        this.parentList = parentList;
+        this.parent = parentList;
         this.sourceType = type;
         this.link = link;
-    }
+    }*/
 
     public static Finder<Long, PlaylistItem> find = new Finder<Long, PlaylistItem>(PlaylistItem.class);
 
-
     /**
      * Factory method for creating a playlists item. Data are validated here.
-     * @param playlist the playlists this item belongs to.
-     * @param type defines the type of the source.
      * @param link the embedded video link
      * */
-    private static PlaylistItem getNewItem(@Nonnull Playlist playlist,
-                                           @Nonnull String link,
-                                           @Nonnull SourceType type) {
+/*    private static PlaylistItem getNewItem(@Nonnull String link) {
+        *//*
+        Link to be validated on adding to playlist
         if (linkValidation(link, type)) {
             PlaylistItem item = new PlaylistItem(playlist, type, link);
             // link should be validated
             return item;
-        }
-        return new PlaylistItem();
+        }*//*
+        PlaylistItem nPlaylistItem = new PlaylistItem();
+        nPlaylistItem.link = link;
+        nPlaylistItem.sourceType = new SourceType(YOUTUBE);
+        return nPlaylistItem;
+    }*/
+
+/*    *//**
+     * Factory method for creating a playlists item. Data are validated here.
+     * @param link the embedded video link
+     * @param parent the playlist the new item shall belong to
+     * *//*
+    public static PlaylistItem getNewItem(@Nonnull String link, @Nonnull Playlist parent) {
+        *//*
+        Link to be validated on adding to playlist
+        if (linkValidation(link, type)) {
+            PlaylistItem item = new PlaylistItem(playlist, type, link);
+            // link should be validated
+            return item;
+        }*//*
+        PlaylistItem nPlaylistItem = new PlaylistItem();
+        nPlaylistItem.link = link;
+        nPlaylistItem.sourceType = new SourceType(YOUTUBE).toString();
+        return nPlaylistItem;
+    }*/
+
+    /**
+     * Factory method for creating a playlists item. Data are validated here.
+     * @param link the embedded video link
+     * @param parent the playlist the new item shall belong to
+     * @param srcType the original source of the link
+     * */
+    public static PlaylistItem getNewItem(@Nonnull String link,
+                                          @Nonnull Playlist parent,
+                                          @Nonnull SourceType.Type srcType) {
+        /*
+        Link to be validated on adding to playlist
+        if (linkValidation(link, type)) {
+            PlaylistItem item = new PlaylistItem(playlist, type, link);
+            // link should be validated
+            return item;
+        }*/
+        PlaylistItem nPlaylistItem = new PlaylistItem();
+        nPlaylistItem.link = link;
+        nPlaylistItem.parent = parent;
+        nPlaylistItem.sourceType = srcType.toString();
+        return nPlaylistItem;
     }
 
-    public Playlist getParentList() {
-        return parentList;
+    public long getID() {
+        return id;
     }
 
-    public SourceType getSourceType() {
+    public Playlist getParent() {
+        return parent;
+    }
+
+    public String getSourceType() {
         return sourceType;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getLink() {
@@ -90,9 +147,10 @@ public class PlaylistItem extends Model {
 
     /**
      * Ensures that the link being added is a valid format for the source type
-     * */
-    private static boolean linkValidation(String link, SourceType type) {
+/*     * *//*
+    public static boolean linkValidation(@Nonnull String link,@Nonnull SourceType type) {
         // TO-DO LATER
+        // DECIDE WHEN TO VALIDATE
         return true;
-    }
+    }*/
 }
