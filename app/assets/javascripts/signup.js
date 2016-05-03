@@ -27,14 +27,15 @@ $().ready(function() {
         rules: {
             username: {
                 required: true,
-                minlength: 8,
-                maxlength: 15,
+                minlength: 4,
+                maxlength: 40,
                 regex: "^[a-zA-Z0-9_-]{4,40}$"
             },
             password: {
                 required: true,
                 minlength: 8,
-                regex: "^[a-zA-Z0-9_-]{4,40}$",
+                maxlength: 256,
+                regex: "^[a-zA-Z0-9_-]{8,256}$",
                 notEqualTo: "#username"
             },
             confirm_password: {
