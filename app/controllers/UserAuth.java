@@ -8,7 +8,7 @@ import play.mvc.Security;
 /**
  * Created by yfle on 3/13/2016.
  */
-public class UserAuth extends Security.Authenticator{
+class UserAuth extends Security.Authenticator{
     @Override
     public String getUsername(final Http.Context ctx){
         String userIDStr = ctx.session().get("user_id");

@@ -1,6 +1,26 @@
 $.validator.setDefaults({
 });
 
+//This method is to check input against regular expressions
+//to prevent input of invalid characters
+$.validator.addMethod(
+    "regex",
+        function(value, element, regexp) {
+            var re = new RegExp(regexp);
+            return this.optional(element) || re.test(value);
+        },
+    "Please make sure you use valid characters [a-z A-Z 0-9 _ - ]."
+);
+
+//This method compares two value to make sure they are not the same
+$.validator.addMethod(
+    "notEqualTo",
+        function(value, element,param){
+        return this.optional(element) || value != $(param).val();
+        },
+    "Please enter different values for password."
+);
+
 $().ready(function() {
     // validate signup form on keyup and submit
     $("#signupForm").validate({
@@ -8,11 +28,14 @@ $().ready(function() {
             username: {
                 required: true,
                 minlength: 8,
-                maxlength: 15
+                maxlength: 15,
+                regex: "^[a-zA-Z0-9_-]{4,40}$"
             },
             password: {
                 required: true,
-                minlength: 8
+                minlength: 8,
+                regex: "^[a-zA-Z0-9_-]{4,40}$",
+                notEqualTo: "#username"
             },
             confirm_password: {
                 required: true,
@@ -32,7 +55,7 @@ $().ready(function() {
             },
             password: {
                 required: "Please provide a password",
-                minlength: "Your password must be at least 8 characters long"
+                minlength: "Your password must be at least 8 characters long",
             },
             confirm_password: {
                 required: "Please provide a password",
@@ -43,4 +66,5 @@ $().ready(function() {
         }
     });
 });
+
 

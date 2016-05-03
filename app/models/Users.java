@@ -8,6 +8,8 @@ import com.avaje.ebean.Model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.validation.Constraints;
 
@@ -15,6 +17,7 @@ import play.data.validation.Constraints;
 public class Users extends Model{
 
     @Id
+    @JsonIgnore
     public long id;
 
     @Constraints.Required
@@ -27,13 +30,15 @@ public class Users extends Model{
 
     @Constraints.Required
     @Column(unique = true)
+    @JsonIgnore
     public String password_hash;
 
-    public static Model.Finder<Long,Users> find = new Model.Finder<Long, Users>(Users.class);
+    public static Finder<Long,Users> find = new Model.Finder<Long, Users>(Users.class);
 
     public boolean authenticate (String password) {return BCrypt.checkpw(password,this.password_hash);}
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     public List<Playlist> playlists = new ArrayList<>();
 
     public static Users createUser(String username, String password, String email){
