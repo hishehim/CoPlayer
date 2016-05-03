@@ -25,41 +25,33 @@ public class Application extends Controller {
         System.out.println(request().host());
         return ok(views.html.index.render("CoPlay"));
     }
+
     public Result getlogin() {return ok(views.html.user.login.render(""));}
 
-    private long loginRoutine() {
+    public Result login() {
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return -1;
+            return badRequest(views.html.user.login.render(""));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
 
         Users user = Users.find.where().eq("username",username).findUnique();
         if (user != null && user.authenticate(password)){
-            session("user_id",String.valueOf(user.id));
-            session("username",user.username);
+            login(user);
             flash("success","Welcome back " +user.username);
         }else{
             flash("error", "Invalid login. Please check your username and password");
-            return 1;
+            return redirect(routes.Application.getlogin());
         }
 
-        return 0;
+        return redirect(routes.Application.index());
         /***need a view page for user profile***/
-        /** Mike edit: use redirect so "Confirm Form Resubmission" does not pop up on refresh */
-        //return redirect(routes.Application.index());
-        //return ok(views.html.index.render("go to profile page"));
     }
 
-    public Result login() {
-        long rUser = loginRoutine();
-        if (rUser == -1)
-            return badRequest(views.html.user.login.render(""));
-        if (rUser == 1)
-            return redirect(routes.Application.getlogin());
-
-        return redirect(routes.Application.index());
+    private void login(Users user) {
+        session("user_id",String.valueOf(user.id));
+        session("username",user.username);
     }
     private void logoutRoutine() {
         //logout stuff here
@@ -68,10 +60,10 @@ public class Application extends Controller {
 
     public Result signup(){return ok(views.html.user.signupform.render(""));}
 
-    private long createNewUser(){
+    public Result newUser(){
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return -1;
+            return badRequest(signupform.render(""));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
@@ -79,43 +71,33 @@ public class Application extends Controller {
 
         if(password.isEmpty()||username.isEmpty()||email.isEmpty()){
             flash("error" , "Empty Fields");
-            return 1;
+            return redirect(routes.Application.signup());
         }
         //Check for valid characters for username and password
         if(!pattern.matcher(username).matches() || !pattern.matcher(password).matches()){
             flash("error","Invalid Character");
-            return 1;
+            return redirect(routes.Application.signup());
         }
         //Check if username is already in use
         if(Users.find.where().eq("username",username).findUnique() != null){
             flash("error","Duplicate username");
-            return 1;
+            return redirect(routes.Application.signup());
         }
         //Check if email is already in use
         if(Users.find.where().eq("email",email).findUnique() != null){
             flash("error","Email already registered");
-            return 1;
+            return redirect(routes.Application.signup());
         }
 
         Users nUser = Users.createUser(username,password,email);
         nUser.save();
         flash("success","Welcome new user "+ nUser.username);
-        session("user_id",nUser.id.toString());
-        session("username",nUser.username);
-        return 0;
-        /***need a view page for user profile***/
-    }
 
-    public Result newUser() {
-        long nUser = createNewUser();
-        if (nUser == -1)
-            return badRequest(signupform.render(""));
-        if (nUser == 1)
-            return redirect(routes.Application.signup());
+        login(nUser);
 
         return redirect(routes.Application.index());
+        /***need a view page for user profile***/
     }
-
 
     public Result logout() {
         logoutRoutine();
