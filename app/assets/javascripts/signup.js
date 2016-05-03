@@ -41,6 +41,7 @@ $().ready(function() {
             confirm_password: {
                 required: true,
                 minlength: 8,
+                maxlength: 256,
                 equalTo: "#password"
             },
             email: {
@@ -51,16 +52,18 @@ $().ready(function() {
         messages: {
             username: {
                 required: "Please enter a username",
-                minlength: "Your username must consist of at least 8 characters",
-                maxlength: "The username should consist of less than 15 characters"
+                minlength: "Your username must consist of at least 4 characters",
+                maxlength: "The username should consist of less than 40 characters"
             },
             password: {
                 required: "Please provide a password",
                 minlength: "Your password must be at least 8 characters long",
+                maxlength: "The password should consist of less than 256 characters"
             },
             confirm_password: {
-                required: "Please provide a password",
+                required: "Please comfirm password",
                 minlength: "Your password must be at least 8 characters long",
+                maxlength: "The password should consist of less than 256 characters",
                 equalTo: "Please enter the same password as above"
             },
             email: "Please enter a valid email address",
