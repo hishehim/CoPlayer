@@ -17,7 +17,9 @@ import javax.inject.Inject;
 public class Application extends Controller {
 
     private final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{4,40}$";
-    private final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+    private final String PASSWORD_PATTERN = "^[a-zA-Z0-9_-]{8,256}$";
+    private final Pattern username_pattern = Pattern.compile(USERNAME_PATTERN);
+    private final Pattern password_pattern = Pattern.compile(PASSWORD_PATTERN);
     @Inject
     private FormFactory formfactory;
 
@@ -74,7 +76,7 @@ public class Application extends Controller {
             return redirect(routes.Application.signup());
         }
         //Check for valid characters for username and password
-        if(!pattern.matcher(username).matches() || !pattern.matcher(password).matches()){
+        if(!username_pattern.matcher(username).matches() || !password_pattern.matcher(password).matches()){
             flash("error","Invalid Character");
             return redirect(routes.Application.signup());
         }
