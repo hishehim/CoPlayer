@@ -18,7 +18,7 @@ public class Users extends Model{
 
     @Id
     @JsonIgnore
-    public long id;
+    public Long id;
 
     @Constraints.Required
     @Column(unique = true)
