@@ -1,6 +1,7 @@
 package controllers;
 
 import play.data.DynamicForm;
+import play.data.Form;
 import play.mvc.*;
 import play.routing.JavaScriptReverseRouter;
 
@@ -8,66 +9,74 @@ import models.Users;
 
 import java.util.regex.Pattern;
 
-import static play.data.Form.form;
+import play.data.FormFactory;
+import views.html.user.signupform;
+
+import javax.inject.Inject;
 
 public class Application extends Controller {
 
     private final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{4,40}$";
-    private final Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+    private final String PASSWORD_PATTERN = "^[a-zA-Z0-9_-]{8,256}$";
+    private final Pattern username_pattern = Pattern.compile(USERNAME_PATTERN);
+    private final Pattern password_pattern = Pattern.compile(PASSWORD_PATTERN);
+    @Inject
+    private FormFactory formfactory;
 
     public Result index() {
         System.out.println(request().host());
         return ok(views.html.index.render("CoPlay"));
     }
-    public Result getlogin() {return ok(views.html.login.render(""));}
+
+    public Result getlogin() {return ok(views.html.user.login.render(""));}
 
     public Result login() {
-        DynamicForm userForm = form().bindFromRequest();
+        DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return badRequest(views.html.login.render(""));
+            return badRequest(views.html.user.login.render(""));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
 
         Users user = Users.find.where().eq("username",username).findUnique();
-        /***need to set up flash message on main***/
         if (user != null && user.authenticate(password)){
-            session("user_id",String.valueOf(user.id));
-            session("username",user.username);
+            login(user);
             flash("success","Welcome back " +user.username);
         }else{
             flash("error", "Invalid login. Please check your username and password");
             return redirect(routes.Application.getlogin());
         }
+
+        return redirect(routes.Application.index());
         /***need a view page for user profile***/
-        /** Mike edit: use redirect so "Confirm Form Resubmission" does not pop up on refresh */
-        return redirect(routes.Application.index());
-        //return ok(views.html.index.render("go to profile page"));
     }
 
-    public Result logout() {
+    private void login(Users user) {
+        session("user_id",String.valueOf(user.id));
+        session("username",user.username);
+    }
+    private void logoutRoutine() {
+        //logout stuff here
         session().clear();
-        return redirect(routes.Application.index());
     }
 
-    public Result signup(){return ok(views.html.signupform.render(""));}
+    public Result signup(){return ok(views.html.user.signupform.render(""));}
 
-    public Result newUser() {
-        DynamicForm userForm = form().bindFromRequest();
+    public Result newUser(){
+        DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return badRequest(views.html.signupform.render(""));
+            return badRequest(signupform.render(""));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
         String email = userForm.data().get("email");
 
-        //Check for empty fields in the form
         if(password.isEmpty()||username.isEmpty()||email.isEmpty()){
             flash("error" , "Empty Fields");
             return redirect(routes.Application.signup());
         }
         //Check for valid characters for username and password
-        if(!pattern.matcher(username).matches() || !pattern.matcher(password).matches()){
+        if(!username_pattern.matcher(username).matches() || !password_pattern.matcher(password).matches()){
             flash("error","Invalid Character");
             return redirect(routes.Application.signup());
         }
@@ -85,9 +94,18 @@ public class Application extends Controller {
         Users nUser = Users.createUser(username,password,email);
         nUser.save();
         flash("success","Welcome new user "+ nUser.username);
+
+        login(nUser);
+
+        return redirect(routes.Application.index());
         /***need a view page for user profile***/
+    }
+
+    public Result logout() {
+        logoutRoutine();
         return redirect(routes.Application.index());
     }
+
 
     /**
      * Class used for routes in javascript
@@ -104,8 +122,7 @@ public class Application extends Controller {
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",
                 controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
-                routes.javascript.Playlists.getByUID(),
-                routes.javascript.UserProfile.showProfile()
+                routes.javascript.Playlists.getByUID()
             )
         ).as("text/javascript");
     }
