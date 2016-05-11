@@ -5,6 +5,8 @@ package models;
  */
 
 import com.avaje.ebean.Model;
+
+import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class Users extends Model{
     public boolean authenticate (String password) {return BCrypt.checkpw(password,this.password_hash);}
 
     @JsonIgnore
+    @Nonnull
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     public List<Playlist> playlists = new ArrayList<>();
 

@@ -25,7 +25,9 @@ POST    /playlist/:pl/addItem       controllers.Playlists.addItem(pl: String)
 POST    /playlist/:pl/removeItem    controllers.Playlists.removeItem(pl: String)
 
 # JSON
-GET     /json/playlist/public       controllers.json.PlaylistJSON.getPublicPlaylist()
+GET     /json/playlist/public/all   controllers.json.PlaylistJSON.getPublicPlaylist()
+GET     /json/playlist/public       controllers.json.PlaylistJSON.getUsrPublicList(user ?= null)
+GET     /json/playlist/private      controllers.json.PlaylistJSON.getUsrPrivateList()
 
 # javascript Router
 GET     /javascriptRoutes           controllers.Application.javascriptRoutes

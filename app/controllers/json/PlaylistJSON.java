@@ -2,7 +2,9 @@ package controllers.json;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlRow;
+import controllers.Application;
 import models.Playlist;
+import models.Users;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
@@ -46,5 +48,43 @@ public class PlaylistJSON extends Controller {
                 .setParameter("is_private", false)
                 .findList();
         return ok(Json.toJson(sqlResult));
+    }
+
+    public Result getUsrPublicList(String userID) {
+        long ownerId;
+        if (userID == null) {
+            ownerId = Application.getSessionUsrId();
+            if (ownerId < 0) {
+                return badRequest();
+            }
+        } else {
+            try {
+                ownerId = Long.parseLong(userID);
+            } catch (NumberFormatException e) {
+                return badRequest();
+            }
+        }
+        if (Users.find.byId(ownerId) == null) {
+            return notFound();
+        }
+        return ok(Json.toJson(getList(ownerId, false)));
+    }
+
+
+    public Result getUsrPrivateList() {
+        long id = Application.getSessionUsrId();
+        if (id < 0) {
+            return forbidden();
+        }
+        return ok(Json.toJson(getList(id, true)));
+    }
+
+    private List<SqlRow> getList(long userID, boolean isPrivate) {
+        String sql = "select p.title, p.uid as id, p.size from playlist p " +
+                " where p.is_private = :is_private and p.owner_id = :owner_id";
+        return Ebean.createSqlQuery(sql)
+                .setParameter("is_private", isPrivate)
+                .setParameter("owner_id", userID)
+                .findList();
     }
 }

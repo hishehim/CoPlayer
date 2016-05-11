@@ -23,6 +23,22 @@ public class Application extends Controller {
     @Inject
     private FormFactory formfactory;
 
+    /**
+     * Utility function to get the user_id from session as long
+     * @return returns the id of the logged in user, -1 if user is not logged in
+     * */
+    public static long getSessionUsrId() {
+        if (session().containsKey("user_id")) {
+            try {
+                return Long.parseLong(session("user_id"));
+            } catch (NumberFormatException ex) {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
+
     public Result index() {
         System.out.println(request().host());
         return ok(views.html.index.render("CoPlay"));
@@ -122,7 +138,10 @@ public class Application extends Controller {
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",
                 controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
-                routes.javascript.Playlists.getByUID()
+                routes.javascript.Playlists.getByUID(),
+                routes.javascript.UserProfile.showProfile(),
+                controllers.json.routes.javascript.PlaylistJSON.getUsrPublicList(),
+                controllers.json.routes.javascript.PlaylistJSON.getUsrPrivateList()
             )
         ).as("text/javascript");
     }

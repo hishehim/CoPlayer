@@ -36,8 +36,8 @@ public class Playlists extends Controller {
             return notFound("NOT FOUND Playlist not found page goes here " + uid);
         }
 
-        return ok(views.html.playlists.single.render(playlist,
-                                        (getSessionUsrId() == playlist.getOwner().id)));
+        return ok(views.html.playlists.single.render(playlist, playlist.getOwner()));
+//                                        (getSessionUsrId() == playlist.getOwner().id)));
     }
 
     @Security.Authenticated(UserAuth.class)
@@ -103,7 +103,7 @@ public class Playlists extends Controller {
         }
         String uid = form.get("pl-uid");
 
-        long userID = getSessionUsrId();
+        long userID = Application.getSessionUsrId();
 
         Ebean.beginTransaction();
         try {
@@ -147,7 +147,7 @@ public class Playlists extends Controller {
         // source type to be verified later
         // url to be verified later
 
-        long userID = getSessionUsrId();
+        long userID = Application.getSessionUsrId();
 
         Ebean.beginTransaction();
         try {
@@ -187,7 +187,7 @@ public class Playlists extends Controller {
         } catch (NumberFormatException ex) {
             return badRequest();
         }
-        long userId = getSessionUsrId();
+        long userId = Application.getSessionUsrId();
 
         Ebean.beginTransaction();
         try {
@@ -212,18 +212,6 @@ public class Playlists extends Controller {
 
     private void getRedirectURL() {
         System.out.println(request().host());
-    }
-
-    /**
-     * Utility function to get the user_id from session as long
-     * @return returns the id of the logged in user, -1 if user is not logged in
-     * */
-    private static long getSessionUsrId() {
-        try {
-            return Long.parseLong(session("user_id"));
-        } catch (NumberFormatException ex) {
-            return -1;
-        }
     }
 
     private Result playlistNotFound() {

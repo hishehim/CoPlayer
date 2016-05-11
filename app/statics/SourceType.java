@@ -24,8 +24,8 @@ public final class SourceType {
     * */
     public enum Type {
         YOUTUBE("YouTube"),
-        DAILYMOTION("DailyMotion"),
-        VIMEO("VIMEO"),
+        //DAILYMOTION("DailyMotion"),
+        //VIMEO("VIMEO"),
         SOUNDCLOUD("SoundCloud");
 
         private final String type;

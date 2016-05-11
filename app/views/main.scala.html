@@ -19,6 +19,9 @@
         @if( session.containsKey("username") ) {
             <li>Hello, @session.get("username")</li>
             <li><a href="@routes.Application.logout()">Logout</a> </li>
+            <li>
+                <a href='@routes.UserProfile.showProfile(Long.parseLong(session.get("user_id")))'>Profile</a>
+            </li>
         } else {
         <li><a href="@routes.Application.login()">Login</a></li>
         <li><a href="@routes.Application.signup()">Sign Up!</a></li>

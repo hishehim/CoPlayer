@@ -1,7 +1,8 @@
-@(playlist: Playlist, isOwner: Boolean = false)
+@(playlist: Playlist, user: Users)
 
 @import statics.SourceType
 
+@defining(session.containsKey("user_id") && (session.get("user_id").equals(String.valueOf(user.id)))) { isOwner =>
 @main(playlist.getTitle()) {
     <h1>@playlist.getTitle()</h1>
     @if(isOwner){
@@ -42,4 +43,5 @@
             </tr>
         }
     </table>
+}
 }
