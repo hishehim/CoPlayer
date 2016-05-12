@@ -1,6 +1,6 @@
 @(playlist: Playlist, user: Users)
 
-@import statics.SourceType
+@import statics.DomainData
 
 @defining(session.containsKey("user_id") && (session.get("user_id").equals(user.getId()))) { isOwner =>
 @main(playlist.getTitle()) {
@@ -19,8 +19,8 @@
         <select id="srcTypeSelector" name="source_type">
             @* <!--TODO: AUTO-DETECT DOMAIN OF GIVEN LINK AND SWITCH OPTIONS ACCORDINGLY
              --> *@
-            @for(srcType <- SourceType.sourceList){
-                <option value="@srcType">@srcType</option>
+            @for(srcDomain <- DomainData.domainList){
+                <option value="@srcDomain">@srcDomain</option>
             }
         </select>
         <button>Add</button>

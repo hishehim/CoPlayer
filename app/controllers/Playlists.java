@@ -1,6 +1,7 @@
 package controllers;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlRow;
 import models.Playlist;
 import models.PlaylistItem;
 import models.Users;
@@ -8,10 +9,15 @@ import play.Logger;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.*;
-import statics.SourceType;
+import statics.DomainData;
+import statics.Domain;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import static com.avaje.ebean.Ebean.createSqlQuery;
 
 /**
  * Created by linmh on 3/18/2016.
@@ -46,17 +52,25 @@ public class Playlists extends Controller {
             flash("error", "Invalid form");
             return badRequest();
         }
+
+        String userID = Application.getSessionUsrId();
         String title = playlistForm.get("title");
         if (title == null || title.isEmpty()) {
             flash("error", "Invalid title");
             return redirect(request().getHeader("referer"));
         }
-        if (!Playlist.find.where().eq("title", title).findList().isEmpty()) {
+        String sql = "select u._id from playlist p " +
+                " inner join users u on u._id = p.owner__id " +
+                " where p.title = :title and u.id = :userID";
+        List<SqlRow> sqlResult = Ebean.createSqlQuery(sql)
+                    .setParameter("title", title)
+                    .setParameter("userID", userID)
+                    .findList();
+        if (!sqlResult.isEmpty()) {
             flash("error", "title already in use");
             return redirect(request().getHeader("referer"));
         }
 
-        String userID = Application.getSessionUsrId();
         Ebean.beginTransaction();
         try {
             Users user = Users.find.where().eq("id",userID).findUnique();
@@ -69,6 +83,8 @@ public class Playlists extends Controller {
                 // force log out ? logout()
                 return internalServerError("Error verifying user data");
             }
+
+
             Playlist nPlaylist = Playlist.getNewPlaylist(title, user);
             if (nPlaylist == null) {
                 flash("error", "could not create new playlist"); // REMOVE ON DEPLOY
@@ -102,9 +118,6 @@ public class Playlists extends Controller {
                 return playlistNotFound();
             }
             if (playlist.getOwner().getId().equals(userID)) {
-            /*
-            * TODO separate normal error from AUTHENTICATION error
-            * */
                 //flash("error", "You're not the owner of the playlist");
                 return forbidden("You're not the owner");
             }
@@ -125,9 +138,9 @@ public class Playlists extends Controller {
 
         String urlStr = nItemForm.get("url");
         String srcTypeStr = nItemForm.get("source_type");
-        SourceType.Type srcType = SourceType.sourceMap.get(srcTypeStr);
+        Domain srcDomain = DomainData.getDomain(srcTypeStr);
 
-        if (srcType == null) {
+        if (srcDomain == null) {
             flash("error", "Invalid source type");
             /* TODO redirect route should be the previous page or default to playlist page
             */
@@ -154,7 +167,7 @@ public class Playlists extends Controller {
                  */
                 return forbidden();
             }
-            PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcType);
+            PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcDomain);
             nItem.save();
             playlist.update();
             Ebean.commitTransaction();

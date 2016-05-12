@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import play.data.FormFactory;
 import views.html.user.signupform;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 public class Application extends Controller {
@@ -66,6 +67,7 @@ public class Application extends Controller {
     private void login(Users user) {
         logoutRoutine();
         session("user_id",user.getId());
+        session("user_row_id", String.valueOf(user.getRowId()));
         session("username",user.getUsername());
     }
 

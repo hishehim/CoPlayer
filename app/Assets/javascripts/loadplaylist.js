@@ -63,5 +63,5 @@ function loadPlaylist() {
 }
 
 $(document).ready(function() {
-   loadPlaylist();
+    loadPlaylist();
 });

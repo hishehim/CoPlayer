@@ -2,7 +2,7 @@ package models;
 
 import com.avaje.ebean.Model;
 import play.data.validation.Constraints;
-import statics.SourceType;
+import statics.Domain;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
@@ -59,11 +59,11 @@ public class PlaylistItem extends Model {
      * Factory method for creating a playlists item. Data are validated here.
      * @param link the embedded video link
      * @param parent the playlist the new item shall belong to
-     * @param srcType the original source of the link
+     * @param srcDomain the original source of the link
      * */
     public static PlaylistItem getNewItem(@Nonnull String link,
                                           @Nonnull Playlist parent,
-                                          @Nonnull SourceType.Type srcType) {
+                                          @Nonnull Domain srcDomain) {
         /*
         Link to be validated on adding to playlist
         if (linkValidation(link, type)) {
@@ -74,7 +74,7 @@ public class PlaylistItem extends Model {
         PlaylistItem nPlaylistItem = new PlaylistItem();
         nPlaylistItem.link = link;
         nPlaylistItem.parent = parent;
-        nPlaylistItem.sourceType = srcType.toString();
+        nPlaylistItem.sourceType = srcDomain.toString();
         return nPlaylistItem;
     }
 
