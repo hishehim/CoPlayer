@@ -40,7 +40,7 @@ public class Application extends Controller {
         return ok(views.html.index.render("CoPlay"));
     }
 
-    public Result getlogin() {return ok(views.html.user.login.render(""));}
+
 
     public Result login() {
         DynamicForm userForm = formfactory.form().bindFromRequest();
@@ -49,14 +49,33 @@ public class Application extends Controller {
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
-
+        if (username.isEmpty()) {
+            flash("error", "username is empty");
+            return (notFound());
+        }
+        if (username==null){
+            flash("error","username is null");
+            return (notFound());
+        }
+        if (username.isEmpty()){
+            flash("error", "password is empty");
+            return (notFound());
+        }
+        if (username==null){
+            flash("error","password is null");
+            return (notFound());
+        }
+        if (username.isEmpty()){
+            flash("error", "password is empty");
+            return (notFound());
+        }
         Users user = Users.find.where().eq("username",username).findUnique();
         if (user != null && user.authenticate(password)){
             login(user);
             flash("success","Welcome back " +user.getUsername());
-        }else{
+        }else {
             flash("error", "Invalid login. Please check your username and password");
-            return redirect(routes.Application.getlogin());
+            return redirect(routes.Application.index());
         }
 
         return redirect(routes.Application.index());
