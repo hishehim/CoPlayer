@@ -20,7 +20,7 @@
             <li>Hello, @session.get("username")</li>
             <li><a href="@routes.Application.logout()">Logout</a> </li>
             <li>
-                <a href='@routes.UserProfile.showProfile(Long.parseLong(session.get("user_id")))'>Profile</a>
+                <a href='@routes.UserProfile.showProfile(session.get("username"))'>Profile</a>
             </li>
         } else {
         <li><a href="@routes.Application.login()">Login</a></li>

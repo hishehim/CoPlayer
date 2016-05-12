@@ -22,12 +22,12 @@ function createListContainer(playlist) {
     var playlistContainer = document.createElement("div");
     playlistContainer.id = "playlist-" + playlist.id;
     playlistContainer.style.outline = "1px solid #333333";
-    var jsr = jsRouter.controllers.Playlists.getByUID(playlist.id);
+    var jsr = jsRouter.controllers.Playlists.getById(playlist.id);
 
     playlistContainer.appendChild(
         createHyperLink(playlist.title, jsr.url));
 
-    jsr = jsRouter.controllers.UserProfile.showProfile(playlist.ownerid);
+    jsr = jsRouter.controllers.UserProfile.showProfile(playlist.owner);
     playlistContainer.appendChild(
         createHyperLink(playlist.owner, jsr.url));
 
@@ -41,9 +41,9 @@ function loadPlaylist() {
     * http://api.jquery.com/jquery.ajax/
     * See controllers.Application.javascriptRoutes
     */
-    jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist().ajax(
-        {
+    $.ajax({
         dataType: "json",
+        url: jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist().url,
         // success is the callback function for successful ajax call
         success: function(data) {
              // get target container to populate the list

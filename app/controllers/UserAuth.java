@@ -8,19 +8,18 @@ import play.mvc.Security;
 /**
  * Created by yfle on 3/13/2016.
  */
-class UserAuth extends Security.Authenticator{
+public class UserAuth extends Security.Authenticator{
     @Override
     public String getUsername(final Http.Context ctx){
-        String userIDStr = ctx.session().get("user_id");
-        if(userIDStr == null)
-            return null;
-
-        Users user = Users.find.byId(Long.parseLong(userIDStr));
-        if (user == null) {
-            ctx.session().clear();
-            return null;
+        if (ctx.session().containsKey("user_id")) {
+            Users user = Users.find.where().eq("id", ctx.session().get("user_id")).findUnique();
+            if (user == null) {
+                ctx.session().clear();
+                return null;
+            }
+            return user.getUsername();
         }
-        return  String.valueOf(user.id);
+        return null;
     }
 
     @Override

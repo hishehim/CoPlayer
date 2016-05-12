@@ -3,16 +3,22 @@ package controllers.json;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlRow;
 import controllers.Application;
+import controllers.UserAuth;
 import models.Playlist;
 import models.Users;
+import org.h2.engine.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.avaje.ebean.Ebean.createSqlQuery;
 
 
 /**
@@ -20,9 +26,9 @@ import java.util.List;
  */
 public class PlaylistJSON extends Controller {
 
-    public Result getPlaylist(String uid) {
+    public Result getPlaylist(String playlistId) {
 
-        Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+        Playlist playlist = Playlist.find.where().eq("uid", playlistId).findUnique();
 
         if (playlist == null) {
             JSONObject emptyResult = new JSONObject();
@@ -41,50 +47,50 @@ public class PlaylistJSON extends Controller {
      * */
     public Result getPublicPlaylist() {
         /* Manual query required */
-        String sql = "select u.username as owner, u.id as ownerid, p.title, p.uid as id, p.size from playlist p " +
-                " inner join users u on u.id = p.owner_id " +
-                " where p.is_private = :is_private";
-        List<SqlRow> sqlResult = Ebean.createSqlQuery(sql)
-                .setParameter("is_private", false)
-                .findList();
+        String sql = "select u.username as owner, p.title, p.id, p.size from playlist p " +
+                " inner join users u on u._id = p.owner__id " +
+                " where p.is_private = :isPrivate";
+        List<SqlRow> sqlResult = new ArrayList<>();
+        sqlResult.addAll(Ebean.createSqlQuery(sql)
+                .setParameter("isPrivate", false)
+                .findList());
         return ok(Json.toJson(sqlResult));
     }
 
-    public Result getUsrPublicList(String userID) {
-        long ownerId;
-        if (userID == null) {
-            ownerId = Application.getSessionUsrId();
-            if (ownerId < 0) {
-                return badRequest();
-            }
+    public Result getUsrPublicList(String username) {
+        if (username == null || username.isEmpty()) {
+            username = session("username");
+        }
+        Users user = Users.find.where().eq("username", username).findUnique();
+        if (user == null) {
+            return notFound(username + " not found");
         } else {
-            try {
-                ownerId = Long.parseLong(userID);
-            } catch (NumberFormatException e) {
-                return badRequest();
-            }
+            return ok(Json.toJson(getList(user.getRowId(), false)));
         }
-        if (Users.find.byId(ownerId) == null) {
-            return notFound();
-        }
-        return ok(Json.toJson(getList(ownerId, false)));
     }
 
-
+    @Security.Authenticated(UserAuth.class)
     public Result getUsrPrivateList() {
-        long id = Application.getSessionUsrId();
-        if (id < 0) {
+        String userID = Application.getSessionUsrId();
+        if (userID.isEmpty()) {
             return forbidden();
         }
-        return ok(Json.toJson(getList(id, true)));
+        Users user = Users.find.where().eq("id",userID).findUnique();
+        if (user == null) {
+            session().clear();
+            return internalServerError("Error with session data, please log in again");
+        }
+        return ok(Json.toJson(getList(user.getRowId(), true)));
     }
 
-    private List<SqlRow> getList(long userID, boolean isPrivate) {
-        String sql = "select p.title, p.uid as id, p.size from playlist p " +
-                " where p.is_private = :is_private and p.owner_id = :owner_id";
-        return Ebean.createSqlQuery(sql)
-                .setParameter("is_private", isPrivate)
-                .setParameter("owner_id", userID)
-                .findList();
+    private List<SqlRow> getList(long userRowID, boolean isPrivate) {
+        String sql = "select p.title, p.id , p.size from playlist p " +
+                " where p.is_private = :isPrivate and p.owner__id = :ownerId";
+        List<SqlRow> result = new ArrayList<>();
+        result.addAll(createSqlQuery(sql)
+                .setParameter("isPrivate", isPrivate)
+                .setParameter("ownerId", userRowID)
+                .findList());
+        return result;
     }
 }

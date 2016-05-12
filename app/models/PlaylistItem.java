@@ -13,18 +13,19 @@ import javax.persistence.*;
  */
 @Table(
         uniqueConstraints =
-                @UniqueConstraint(columnNames = {"parent_id","id"})
+                @UniqueConstraint(columnNames = {"parent__id","_id"})
 )
 @Entity
 public class PlaylistItem extends Model {
 
     @Id
     @GeneratedValue
-    protected long id;
+    @Column(name = "_id")
+    private long rowId;
 
     @Constraints.Required
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "parent_id")
+    @Column(name = "parent__id")
     private Playlist parent;
 
     /**
@@ -51,56 +52,8 @@ public class PlaylistItem extends Model {
      */
     private PlaylistItem() {}
 
-/*    *//**
-     * Default private constructor used to create a playlists item
-     * @param parentList the playlists this item belongs to.
-     * @param type defines the type of the source.
-     * @param link the embedded video link
-     * *//*
-    private PlaylistItem(Playlist parentList, SourceType type, String link) {
-        this.parent = parentList;
-        this.sourceType = type;
-        this.link = link;
-    }*/
-
     public static Finder<Long, PlaylistItem> find = new Finder<Long, PlaylistItem>(PlaylistItem.class);
 
-    /**
-     * Factory method for creating a playlists item. Data are validated here.
-     * @param link the embedded video link
-     * */
-/*    private static PlaylistItem getNewItem(@Nonnull String link) {
-        *//*
-        Link to be validated on adding to playlist
-        if (linkValidation(link, type)) {
-            PlaylistItem item = new PlaylistItem(playlist, type, link);
-            // link should be validated
-            return item;
-        }*//*
-        PlaylistItem nPlaylistItem = new PlaylistItem();
-        nPlaylistItem.link = link;
-        nPlaylistItem.sourceType = new SourceType(YOUTUBE);
-        return nPlaylistItem;
-    }*/
-
-/*    *//**
-     * Factory method for creating a playlists item. Data are validated here.
-     * @param link the embedded video link
-     * @param parent the playlist the new item shall belong to
-     * *//*
-    public static PlaylistItem getNewItem(@Nonnull String link, @Nonnull Playlist parent) {
-        *//*
-        Link to be validated on adding to playlist
-        if (linkValidation(link, type)) {
-            PlaylistItem item = new PlaylistItem(playlist, type, link);
-            // link should be validated
-            return item;
-        }*//*
-        PlaylistItem nPlaylistItem = new PlaylistItem();
-        nPlaylistItem.link = link;
-        nPlaylistItem.sourceType = new SourceType(YOUTUBE).toString();
-        return nPlaylistItem;
-    }*/
 
     /**
      * Factory method for creating a playlists item. Data are validated here.
@@ -125,8 +78,19 @@ public class PlaylistItem extends Model {
         return nPlaylistItem;
     }
 
-    public long getID() {
-        return id;
+
+    public long getId() {
+        return rowId;
+    }
+
+    @PrePersist
+    private void prePersist() {
+        parent.increaseSize();
+    }
+
+    @PostRemove
+    private void postRemove() {
+        parent.decreaseSize();
     }
 
     public Playlist getParent() {
@@ -144,13 +108,4 @@ public class PlaylistItem extends Model {
     public String getLink() {
         return link;
     }
-
-    /**
-     * Ensures that the link being added is a valid format for the source type
-/*     * *//*
-    public static boolean linkValidation(@Nonnull String link,@Nonnull SourceType type) {
-        // TO-DO LATER
-        // DECIDE WHEN TO VALIDATE
-        return true;
-    }*/
 }

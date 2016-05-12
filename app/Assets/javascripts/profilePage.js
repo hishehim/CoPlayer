@@ -21,7 +21,7 @@ function createPlaylistContainer(playlist){
     var playlistContainer = document.createElement("div");
     playlistContainer.id = "playlist-" + playlist.id;
     playlistContainer.style.outline = "1px solid #333333";
-    var jsr = jsRouter.controllers.Playlists.getByUID(playlist.id);
+    var jsr = jsRouter.controllers.Playlists.getById(playlist.id);
 
     playlistContainer.appendChild(
         createHyperLink(playlist.title, jsr.url));
@@ -31,8 +31,9 @@ function createPlaylistContainer(playlist){
 }
 
 function loadPL(url, container){
-    url.ajax({
+    $.ajax({
         dataType: "json",
+        url: url,
         success: function(data) {
              var listView = document.getElementById(container);
              // loop through json array and append it to the main container
