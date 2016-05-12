@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 import play.data.FormFactory;
-import views.html.user.signupform;
 
 import javax.inject.Inject;
 
@@ -40,8 +39,6 @@ public class Application extends Controller {
         return ok(views.html.index.render("CoPlay"));
     }
 
-
-
     public Result login() {
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
@@ -49,26 +46,7 @@ public class Application extends Controller {
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
-        if (username.isEmpty()) {
-            flash("error", "username is empty");
-            return (notFound());
-        }
-        if (username==null){
-            flash("error","username is null");
-            return (notFound());
-        }
-        if (username.isEmpty()){
-            flash("error", "password is empty");
-            return (notFound());
-        }
-        if (username==null){
-            flash("error","password is null");
-            return (notFound());
-        }
-        if (username.isEmpty()){
-            flash("error", "password is empty");
-            return (notFound());
-        }
+
         Users user = Users.find.where().eq("username",username).findUnique();
         if (user != null && user.authenticate(password)){
             login(user);
@@ -78,8 +56,7 @@ public class Application extends Controller {
             return redirect(routes.Application.index());
         }
 
-        return redirect(routes.Application.index());
-        /***need a view page for user profile***/
+        return redirect(routes.UserProfile.showProfile(username));
     }
 
     private void login(Users user) {
@@ -89,16 +66,15 @@ public class Application extends Controller {
     }
 
     private void logoutRoutine() {
-        //logout stuff here
         session().clear();
     }
 
-    public Result signup(){return ok(views.html.user.signupform.render(""));}
+    public Result signup(){return ok(views.html.index.render("CoPlay"));}
 
     public Result newUser(){
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return badRequest(signupform.render(""));
+            return badRequest(views.html.index.render("CoPlay"));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
@@ -130,8 +106,7 @@ public class Application extends Controller {
 
         login(nUser);
 
-        return redirect(routes.Application.index());
-        /***need a view page for user profile***/
+        return redirect(routes.UserProfile.showProfile(username));
     }
 
     public Result logout() {

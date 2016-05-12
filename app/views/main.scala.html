@@ -7,25 +7,17 @@
         <title>@title</title>
 
         <link rel="stylesheet" media="screen" href='@routes.Assets.versioned("stylesheets/main.css")'>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
         <link rel="shortcut icon" type="image/png" href='@routes.Assets.versioned("images/favicon.png")'>
         @scripts
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        @* scripts used for login *@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-        <style>
-  .modal-header, h4, .close {
-      background-color: #5cb85c;
-      color:white !important;
-      text-align: center;
-      font-size: 30px;
-  }
-  .modal-footer {
-      background-color: #f9f9f9;
-  }
-  </style>
+        @* scripts used for signup *@
+        <script type="text/javascript" src='@routes.Assets.versioned("javascripts/jquery.validate.js")'></script>
+        <script type="text/javascript" src='@routes.Assets.versioned("javascripts/signup.js")' ></script>
 
     </head>
 
@@ -40,8 +32,8 @@
                 <a href='@routes.UserProfile.showProfile(session.get("username"))'>Profile</a>
             </li>
         } else {
-        <li><a href="#myModal" role="button" data-toggle="modal">Login</a></li>
-        <li><a href="@routes.Application.signup()">Sign Up!</a></li>
+        <li><a href="#Login" role="button" data-toggle="modal">Login</a></li>
+        <li><a href="#Signup" role="button" data-toggle="modal">Sign Up!</a></li>
         }
         <li>
             <form action="@routes.Playlists.create()" method="post">
@@ -56,7 +48,7 @@
 
     <div class="container">
         <!-- Modal -->
-        <div class="modal fade" id="myModal" role="dialog" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal fade" id="Login" role="dialog" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
             <div class="modal-dialog">
                 <!-- Modal content-->
                 <div class="modal-content">
@@ -68,11 +60,11 @@
                         <form role="form" action="@routes.Application.login()" method="post">
                             <div class="form-group">
                                 <label class="control-label col-sm-2" for="username"><span class="glyphicon glyphicon-user"></span> Username</label>
-                                <input id="username" type="text" name="username" class="form-control" placeholder="Enter Username">
+                                <input id="login_username" type="text" name="username" class="form-control" placeholder="Enter Username">
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-sm-2" for="password"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
-                                <input id="password" type="password" name="password" class="form-control" placeholder="password">
+                                <input id="login_password" type="password" name="password" class="form-control" placeholder="password">
                             </div>
                             <button class="btn btn-success btn-block"><span class="glyphicon glyphicon-off"></span> Login</button>
                         </form>
@@ -81,6 +73,50 @@
             </div>
         </div>
     </div>
+
+    @* Modal for user signup once logged in will be redirected to index page *@
+
+    <div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="Signup" role="dialog" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header" style="padding:35px 50px;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4><span class="glyphicon glyphicon-lock"></span> Login</h4>
+                    </div>
+                    <div class="modal-body" style="padding:40px 50px;">
+                        <form class="cmxform" id="signupForm" action="@routes.Application.newUser()" method="post">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input id="username" name="username" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input id="password" name="password" type="password">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirm password</label>
+                                    <input id="confirm_password" name="confirm_password" type="password">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input id="email" name="email" type="email">
+                                </div>
+                            </fieldset>
+                            <p>
+                                <input class="submit" type="submit" value="Submit">
+                            </p>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @* END HEADER *@
 
 
