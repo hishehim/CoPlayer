@@ -45,7 +45,7 @@ public class Application extends Controller {
     public Result login() {
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return badRequest(views.html.user.login.render(""));
+            return badRequest(views.html.index.render(""));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
