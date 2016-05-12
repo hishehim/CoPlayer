@@ -1,16 +1,17 @@
-@(playlist: Playlist, isOwner: Boolean = false)
+@(playlist: Playlist, user: Users)
 
 @import statics.SourceType
 
+@defining(session.containsKey("user_id") && (session.get("user_id").equals(user.getId()))) { isOwner =>
 @main(playlist.getTitle()) {
     <h1>@playlist.getTitle()</h1>
     @if(isOwner){
     <form action="@routes.Playlists.remove()" method="post">
-        <input type="hidden" name="pl-uid" value="@playlist.getUID()">
+        <input type="hidden" name="pl-id" value="@playlist.getId()">
         <button>delete</button>
     </form>
     <hr>
-    <form action="@routes.Playlists.addItem(playlist.getUID())" method="post">
+    <form action="@routes.Playlists.addItem(playlist.getId())" method="post">
         <label>Video URL</label>
         @* <!--TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
          --> *@
@@ -33,8 +34,8 @@
                 <td>@item.getLink()</td>
                 @if(isOwner){
                     <td>
-                        <form action="@routes.Playlists.removeItem(playlist.getUID())" method="post">
-                            <input type="hidden" name="it-id" value="@item.getID()">
+                        <form action="@routes.Playlists.removeItem(playlist.getId())" method="post">
+                            <input type="hidden" name="it-id" value="@item.getId()">
                             <button>Delete</button>
                         </form>
                     </td>
@@ -42,4 +43,5 @@
             </tr>
         }
     </table>
+}
 }

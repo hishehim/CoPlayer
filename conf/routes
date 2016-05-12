@@ -14,18 +14,20 @@ POST    /signup                     controllers.Application.newUser()
 
 GET     /logout                     controllers.Application.logout()
 
-GET     /Users/:id                  controllers.UserProfile.showProfile(id: Long)
+GET     /Users/:username            controllers.UserProfile.showProfile(username: String)
 
 
 # Playlist Pages
-GET     /playlist                   controllers.Playlists.getByUID(id ?= null)
-POST    /playlist                   controllers.Playlists.create()
+GET     /playlist                   controllers.Playlists.getById(id ?= null)
+POST    /playlist/create            controllers.Playlists.create()
 POST    /playlist/remove            controllers.Playlists.remove()
 POST    /playlist/:pl/addItem       controllers.Playlists.addItem(pl: String)
 POST    /playlist/:pl/removeItem    controllers.Playlists.removeItem(pl: String)
 
 # JSON
-GET     /json/playlist/public       controllers.json.PlaylistJSON.getPublicPlaylist()
+GET     /json/playlist/public/all   controllers.json.PlaylistJSON.getPublicPlaylist()
+GET     /json/playlist/public       controllers.json.PlaylistJSON.getUsrPublicList(user ?= null)
+GET     /json/playlist/private      controllers.json.PlaylistJSON.getUsrPrivateList()
 
 # javascript Router
 GET     /javascriptRoutes           controllers.Application.javascriptRoutes

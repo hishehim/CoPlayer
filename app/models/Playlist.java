@@ -15,28 +15,27 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import static controllers.Application.random;
 
 
 @Table(
     name = "playlist",
     // sets a composite unique constraint for user_id and playlists-title
     uniqueConstraints =
-        @UniqueConstraint(columnNames = {"owner_id", "title"})
+        @UniqueConstraint(columnNames = {"owner__id", "title"})
 )
 @Entity
 public class Playlist extends Model {
 
-    @Transient
-    private static final Random random = new Random();
-
     @Id
     @GeneratedValue
-    private long id;
+    @Column(name = "_id")
+    private long rowId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "owner_id")
     @Constraints.Required
+    @Column(name = "owner__id")
     private Users owner;
 
     @Constraints.Required
@@ -44,8 +43,8 @@ public class Playlist extends Model {
     private String title;
 
     @Constraints.MaxLength(20)
-    @Column(name = "uid")
-    private String uid;
+    @Column(name = "id", unique = true)
+    private String id;
 
     @Constraints.Required
     @CreatedTimestamp
@@ -79,15 +78,15 @@ public class Playlist extends Model {
         * Calculated collision rate with half full database is 0.5^4 ~= 6%
         * */
         for (int i = 0; i < 4; i++){
-            playlist.uid = genUID();
-            if (find.where().eq("uid", playlist.uid).findRowCount() == 0) {
+            playlist.id = genID();
+            if (find.where().eq("id", playlist.id).findRowCount() == 0) {
                 return playlist;
             }
         }
         return null;
     }
 
-    public long getID() { return id; }
+    public long getRowId() { return rowId; }
 
     public Users getOwner() { return owner; }
 
@@ -99,8 +98,8 @@ public class Playlist extends Model {
         return createTime;
     }
 
-    public String getUID() {
-        return uid;
+    public String getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -111,20 +110,20 @@ public class Playlist extends Model {
         return size;
     }
 
-    public void increaseSize() { size++; }
+    void increaseSize() { size++; }
 
-    public void decreaseSize() { size--; }
+    void decreaseSize() { size--; }
 
     public List<PlaylistItem> getListItems() {
         return listItems;
     }
 
-    private static String genUID() {
+    private static String genID() {
         /*
         * 6 bits = one base 64 char (8 bits)
         * Conversion from byte to base64 is 3:4
         *   AKA every 3 bytes = 4 chars in base 64
-        * Current 15-byte generates list id of length 20
+        * Current 15-byte generates list _id of length 20
         * TODO: make ID length random within certain range? Increases ID pool = less collision
         * */
         byte[] byteArr = new byte[15];

@@ -1,0 +1,48 @@
+@(user: Users, isOwner: Boolean = false)
+
+@script = {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
+    <script src='@routes.Assets.versioned("javascripts/profilePage.js")'></script>
+    @if(isOwner) {
+    <script src='@routes.Assets.versioned("javascripts/tabTable.js")'></script>
+    <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("stylesheets/tabTable.css")'>
+    <script>
+        $(document).ready(function(){
+            loadPL('@json.routes.PlaylistJSON.getUsrPublicList()', 'public-pl');
+            loadPL('@json.routes.PlaylistJSON.getUsrPrivateList()', 'private-pl');
+            @*
+            loadPL(jsRouter.controllers.json.PlaylistJSON.getUsrPublicList(), 'public-pl');
+            loadPL(jsRouter.controllers.json.PlaylistJSON.getUsrPrivateList(), 'private-pl');
+            *@
+            document.getElementById('public-pl').style.display="block"
+        });
+    </script>
+    } else {
+    <script>
+        $(document).ready(function(){
+            loadPL('@json.routes.PlaylistJSON.getUsrPublicList(user.getUsername())', 'public-pl');
+            @*loadPL(jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist(@user.getUsername()), 'public-pl');*@
+        });
+    </script>
+    }
+}
+
+@main(user.getUsername(), script) {
+    <h1>@user.getUsername()</h1>
+    <hr>
+    @if(isOwner) {
+        <ul class="tab">
+            <li><a id="public-tab" href="#" class="tabLink" onclick="openTab(event, 'public-pl')" onload="this.click()">Public</a></li>
+            <li><a id="private-tab" href="#" class="tabLink" onclick="openTab(event, 'private-pl')">Private</a></li>
+        </ul>
+        <div id="public-pl" class="tabContainer">
+        </div>
+
+        <div id="private-pl" class="tabContainer">
+        </div>
+    } else {
+        <div id="public-pl">
+        </div>
+    }
+}

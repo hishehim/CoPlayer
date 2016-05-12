@@ -23,21 +23,20 @@ public class Playlists extends Controller {
     @Inject
     private FormFactory formFactory;
 
-    public Result getByUID(String uid) {
-        if (uid == null || uid.isEmpty()) {
-            /* Empty uid should be redirected to main page */
+    public Result getById(String id) {
+        if (id == null || id.isEmpty()) {
+            /* Empty id should be redirected to main page */
             return movedPermanently(routes.Application.index());
-        } else if (!UID_PATTERN.matcher(uid).matches()) {
-            return notFound("BAD ID Playlist not found page goes here");
+        } else if (!UID_PATTERN.matcher(id).matches()) {
+            return notFound("Playlist not found page goes here");
         }
 
-        Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+        Playlist playlist = Playlist.find.where().eq("id", id).findUnique();
         if (playlist == null) {
-            return notFound("NOT FOUND Playlist not found page goes here " + uid);
+            return notFound("Playlist not found page goes here " + id);
         }
 
-        return ok(views.html.playlists.single.render(playlist,
-                                        (getSessionUsrId() == playlist.getOwner().id)));
+        return ok(views.html.playlists.single.render(playlist, playlist.getOwner()));
     }
 
     @Security.Authenticated(UserAuth.class)
@@ -56,20 +55,11 @@ public class Playlists extends Controller {
             flash("error", "title already in use");
             return redirect(request().getHeader("referer"));
         }
-        long userID;
 
-        try {
-            userID = Long.parseLong(session("user_id"));
-        } catch (NumberFormatException e) {
-            // error parse user ID as long
-            flash("error", "Something went wrong with your session. Please relog!");
-            // logout()
-            return redirect(request().getHeader("referer"));
-        }
-
+        String userID = Application.getSessionUsrId();
         Ebean.beginTransaction();
         try {
-            Users user = Users.find.byId(Long.parseLong(session("user_id")));
+            Users user = Users.find.where().eq("id",userID).findUnique();
             /*
             * Validate user still exist for the entire duration of this transaction
             * */
@@ -85,11 +75,11 @@ public class Playlists extends Controller {
                 // too many collision on ID gen, need to expand ID length
                 // return bad request with unable to generate new playlist error
                 // return redirect(request().getHeader("referer"));
-                return internalServerError("Could not create new playlist");
+                return internalServerError("Failed to create new playlist");
             }
             nPlaylist.save();
             Ebean.commitTransaction();
-            return redirect(routes.Playlists.getByUID(nPlaylist.getUID()));
+            return redirect(routes.Playlists.getById(nPlaylist.getId()));
         } finally {
             Ebean.endTransaction();
         }
@@ -101,22 +91,22 @@ public class Playlists extends Controller {
         if (form.hasErrors()) {
             return badRequest();
         }
-        String uid = form.get("pl-uid");
+        String plId = form.get("pl-uid");
 
-        long userID = getSessionUsrId();
+        String userID = Application.getSessionUsrId();
 
         Ebean.beginTransaction();
         try {
-            Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+            Playlist playlist = Playlist.find.where().eq("id", plId).findUnique();
             if (playlist == null) {
                 return playlistNotFound();
             }
-            if (playlist.getOwner().id != userID) {
+            if (playlist.getOwner().getId().equals(userID)) {
             /*
             * TODO separate normal error from AUTHENTICATION error
             * */
-                flash("error", "You're not the owner of the playlist");
-                return unauthorized();
+                //flash("error", "You're not the owner of the playlist");
+                return forbidden("You're not the owner");
             }
             playlist.delete();
             Ebean.commitTransaction();
@@ -127,7 +117,7 @@ public class Playlists extends Controller {
     }
 
     @Security.Authenticated(UserAuth.class)
-    public Result addItem(String playlistUID) {
+    public Result addItem(String playlistID) {
         DynamicForm nItemForm = formFactory.form().bindFromRequest();
         if (nItemForm.hasErrors()) {
             return badRequest();
@@ -141,62 +131,65 @@ public class Playlists extends Controller {
             flash("error", "Invalid source type");
             /* TODO redirect route should be the previous page or default to playlist page
             */
-            return redirect(routes.Playlists.getByUID(playlistUID));
+            return redirect(routes.Playlists.getById(playlistID));
         }
 
         // source type to be verified later
         // url to be verified later
 
-        long userID = getSessionUsrId();
+        String userID = Application.getSessionUsrId();
 
         Ebean.beginTransaction();
         try {
-            Playlist playlist = Playlist.find.where().eq("uid", playlistUID).findUnique();
+            Playlist playlist = Playlist.find.where().eq("id", playlistID).findUnique();
             if (playlist == null) {
                 return notFound("Playlist does not exist");
             }
-            if (!(playlist.getOwner().id == userID)) {
+            if (!(playlist.getOwner().getId().equals(userID))) {
                 /*
                  * flash("error", "You are not the owner of this playlist! Your attempt has been logged");
                  * String logMsg = "User " + session("user_id") + " tried to access playlist " +
-                 * playlistUID + " which belongs to user " + playlist.getOwner().id;
+                 * playlistUID + " which belongs to user " + playlist.getOwner().rowID;
                  * Logger.info(logMsg);
                  */
-                return unauthorized();
+                return forbidden();
             }
             PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcType);
-            playlist.increaseSize();
             nItem.save();
             playlist.update();
             Ebean.commitTransaction();
         } finally {
             Ebean.endTransaction();
         }
-        return redirect(routes.Playlists.getByUID(playlistUID));
+        return redirect(routes.Playlists.getById(playlistID));
     }
 
     @Security.Authenticated(UserAuth.class)
-    public Result removeItem(String uid) {
+    public Result removeItem(String playlistID) {
+
         DynamicForm itemForm = formFactory.form().bindFromRequest();
+
         if (itemForm.hasErrors()) {
             return badRequest();
         }
+
         long itemID;
+
         try {
             itemID = Long.parseLong(itemForm.get("it-id"));
         } catch (NumberFormatException ex) {
             return badRequest();
         }
-        long userId = getSessionUsrId();
+        String userId = Application.getSessionUsrId();
 
         Ebean.beginTransaction();
         try {
-            Playlist playlist = Playlist.find.where().eq("uid", uid).findUnique();
+            Playlist playlist = Playlist.find.where().eq("id", playlistID).findUnique();
             if (playlist == null) {
-                return notFound();
+                return playlistNotFound();
             }
-            if (playlist.getOwner().id != userId) {
-                return unauthorized();
+            if (playlist.getOwner().getId().equals(userId)) {
+                return forbidden();
             }
             PlaylistItem playlistItem = PlaylistItem.find.byId(itemID);
             if (playlistItem == null) {
@@ -207,23 +200,11 @@ public class Playlists extends Controller {
         } finally {
             Ebean.endTransaction();
         }
-        return redirect(routes.Playlists.getByUID(uid));
+        return redirect(routes.Playlists.getById(playlistID));
     }
 
     private void getRedirectURL() {
         System.out.println(request().host());
-    }
-
-    /**
-     * Utility function to get the user_id from session as long
-     * @return returns the id of the logged in user, -1 if user is not logged in
-     * */
-    private static long getSessionUsrId() {
-        try {
-            return Long.parseLong(session("user_id"));
-        } catch (NumberFormatException ex) {
-            return -1;
-        }
     }
 
     private Result playlistNotFound() {

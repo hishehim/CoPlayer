@@ -29,6 +29,7 @@
 /project/*-shim.sbt
 bin/
 conf/logback.xml
+conf/evolutions/default/1.sql
 dist
 logs
 out

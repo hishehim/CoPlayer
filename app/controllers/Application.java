@@ -1,12 +1,13 @@
 package controllers;
 
+import com.avaje.ebean.Ebean;
 import play.data.DynamicForm;
-import play.data.Form;
 import play.mvc.*;
 import play.routing.JavaScriptReverseRouter;
 
 import models.Users;
 
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import play.data.FormFactory;
@@ -16,15 +17,26 @@ import javax.inject.Inject;
 
 public class Application extends Controller {
 
-    private final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{4,40}$";
-    private final String PASSWORD_PATTERN = "^[a-zA-Z0-9_-]{8,256}$";
-    private final Pattern username_pattern = Pattern.compile(USERNAME_PATTERN);
-    private final Pattern password_pattern = Pattern.compile(PASSWORD_PATTERN);
+    private final Pattern username_pattern = Pattern.compile("^[a-zA-Z0-9_-]{4,40}$");
+    private final Pattern password_pattern = Pattern.compile("^[a-zA-Z0-9_-]{8,256}$");
+    public static final Random random = new Random();
+
     @Inject
     private FormFactory formfactory;
 
+    /**
+     * Utility function to get the user_id from session as long
+     * @return returns the rowID of the logged in user, -1 if user is not logged in
+     * */
+    public static String getSessionUsrId() {
+        if (session().containsKey("user_id")) {
+            return session("user_id");
+        } else {
+            return "";
+        }
+    }
+
     public Result index() {
-        System.out.println(request().host());
         return ok(views.html.index.render("CoPlay"));
     }
 
@@ -41,7 +53,7 @@ public class Application extends Controller {
         Users user = Users.find.where().eq("username",username).findUnique();
         if (user != null && user.authenticate(password)){
             login(user);
-            flash("success","Welcome back " +user.username);
+            flash("success","Welcome back " +user.getUsername());
         }else{
             flash("error", "Invalid login. Please check your username and password");
             return redirect(routes.Application.getlogin());
@@ -52,9 +64,11 @@ public class Application extends Controller {
     }
 
     private void login(Users user) {
-        session("user_id",String.valueOf(user.id));
-        session("username",user.username);
+        logoutRoutine();
+        session("user_id",user.getId());
+        session("username",user.getUsername());
     }
+
     private void logoutRoutine() {
         //logout stuff here
         session().clear();
@@ -93,7 +107,7 @@ public class Application extends Controller {
 
         Users nUser = Users.createUser(username,password,email);
         nUser.save();
-        flash("success","Welcome new user "+ nUser.username);
+        flash("success","Welcome new user "+ nUser.getUsername());
 
         login(nUser);
 
@@ -122,7 +136,10 @@ public class Application extends Controller {
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",
                 controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
-                routes.javascript.Playlists.getByUID()
+                routes.javascript.Playlists.getById(),
+                routes.javascript.UserProfile.showProfile(),
+                controllers.json.routes.javascript.PlaylistJSON.getUsrPublicList(),
+                controllers.json.routes.javascript.PlaylistJSON.getUsrPrivateList()
             )
         ).as("text/javascript");
     }
