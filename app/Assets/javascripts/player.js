@@ -10,21 +10,43 @@ var playlist = [
 ];
 
 
-var curIndex;
+var curIndex = 0;
+var playingPlayer = {
+    play: function(){ return; },
+    pause: function(){ return; },
+    stop: function(){ return; }
+};
+//var currFrame = null;
 
+function showPlayer(player) {
+    $(".player").each(function(i, p){
+        $(p).hide();
+    });
+    player.show();
+}
 
 /* soundcloud widget control */
 var scplayer;
+var scReady = false;
 function genSCLink(id) { return "https://soundcloud.com/".concat(id); }
 
-function initalizeSC(){
+function initializeSC(){
     var widgetIframe = document.getElementById('sc-player');
     scplayer = SC.Widget(widgetIframe);
     $('#sc-player').hide();
+    scplayer.bind(SC.Widget.Events.READY, function() {
+        scReady = true;
+        scplayer.bind(SC.Widget.Events.FINISH, function() {
+            //scplayer.pause();
+            playNext();
+        });
+        scplayer.bind(SC.Widget.Events.ERROR, function() {
+            playNext();
+        });
+    });
 }
 
 function loadSC(url) {
-    console.log(url);
     scplayer.load(url,{
           show_artwork: false,
           auto_play: true,
@@ -34,24 +56,20 @@ function loadSC(url) {
           show_comments: false,
           show_playcount: false,
     });
-    scplayer.bind(SC.Widget.Events.FINISH, function() {
-        $('#sc-player').hide();
-/*        playingPlayer.stop = scplayer.pause();
-        playingPlayer.play = scplayer.play();
-        playingPlayer.pause = scplayer.pause();*/
-        scplayer.pause();
-        playNext();
-    });
+    playingPlayer.play = function(){scplayer.play();};
+    playingPlayer.pause = function(){scplayer.pause();};
+    playingPlayer.stop = function(){scplayer.pause();};
 }
 
 function scPlay(url) {
-    $('#sc-player').show();
+    playingPlayer.stop();
+    showPlayer($('#sc-player'));
     loadSC(genSCLink(url));
 }
 
 
 /* youtube player control */
-function initalizeYT() {
+function initializeYT() {
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -69,7 +87,8 @@ function onYouTubeIframeAPIReady() {
         'autoplay': 0,
         'enablejsapi':1,
         'origin': document.domain,
-        'rel':0
+        'rel': 0,
+        'fs': 0
       },
       events: {
         'onReady': onPlayerReady,
@@ -94,22 +113,18 @@ function onPlayerReady(event) {
 function onPlayerStateChange(event) {
     switch(event.data) {
         case 0:
-            //ytPlayer.removeEventListener('onStateChange', onPlayerStateChange);
-            event.target.stopVideo();
-            //ytPlayer.stopVideo();
-            //ytPlayer.addEventListener('onStateChange', onPlayerStateChange);
-            $('#yt-player').hide();
+            //event.target.stopVideo();
             playNext();
             break;
     }
 }
 
 function ytPlay(id) {
-    $('#yt-player').show();
-    //playingPlayer.play = ytPlayer.playVideo();
-    //playingPlayer.stop = ytPlayer.stopVideo();
-    //playingPlayer.pause = ytPlayer.pause();
-    //ytPlayer.addEventListener('onStateChange', onPlayerStateChange);
+    playingPlayer.stop();
+    showPlayer($('#yt-player'));
+    playingPlayer.play = function(){ytPlayer.playVideo();};
+    playingPlayer.pause = function(){ytPlayer.pauseVideo();};
+    playingPlayer.stop = function(){ytPlayer.stopVideo();};
     ytPlayer.loadVideoById(id);
 }
 
@@ -130,24 +145,28 @@ function play(index) {
     }
 }
 
+function playPrev() {
+    play(curIndex - 1);
+}
+
 function playNext() {
     play(curIndex + 1);
 }
 
 function beginPlaylist() {
-    if (ytReady === false) {
+    if (ytReady === false || scReady === false) {
         setTimeout(beginPlaylist, 100);
     } else {
+        $("#player-nav").show();
         curIndex = 0;
         play(0);
     }
 }
 
 $(document).ready(function(){
-    initalizeYT();
-    initalizeSC();
+
+        $("#player-nav").hide();
+    initializeYT();
+    initializeSC();
     beginPlaylist();
-    //readyYouTubePlayer();
-    //ytPlay('0Bmhjf0rKe8');
-    //scPlay("sai-ram-49/charlie-puth-see-you-again-piano-demo-version-without-wiz-khalifafurious-7-soundtrack");
 });
