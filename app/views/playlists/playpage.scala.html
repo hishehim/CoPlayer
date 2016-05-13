@@ -1,0 +1,29 @@
+@(playlist: Playlist, items: List[PlaylistItem])
+
+@scripts = {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
+    <script type="text/javascript" src="https://w.soundcloud.com/player/api.js"></script>
+    <script src='@routes.Assets.versioned("javascripts/player.js")'></script>
+<style>
+    .player {
+    height: 100%;
+    width: 100%;
+    min-height: 200px;
+    min-width: 200px;
+    display: 'none';
+    max-height: 720px;
+    }
+</style>
+}
+
+@main("play page", scripts) {
+    <button id="btn-prev">Prev</button>
+    <button id="btn-play" onclick="toggle()">play</button>
+    <button id="btn-pause" style="display: 'none';" onclick="toggle()">pause</button>
+    <button id="btn-next">Prev</button>
+
+    <hr>
+    <div id="yt-player" class="player"></div>
+    <iframe id="sc-player" class="player" src="https://w.soundcloud.com/player/?url=" width="100%" height="100%" scrolling="no" frameborder="no"></iframe>
+}

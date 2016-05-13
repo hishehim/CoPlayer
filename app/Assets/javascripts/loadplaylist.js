@@ -22,7 +22,7 @@ function createListContainer(playlist) {
     var playlistContainer = document.createElement("div");
     playlistContainer.id = "playlist-" + playlist.id;
     playlistContainer.style.outline = "1px solid #333333";
-    var jsr = jsRouter.controllers.Playlists.getById(playlist.id);
+    var jsr = jsRouter.controllers.Playlists.play(playlist.id);
 
     playlistContainer.appendChild(
         createHyperLink(playlist.title, jsr.url));

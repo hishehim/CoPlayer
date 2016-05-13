@@ -19,6 +19,7 @@ GET     /Users/:username            controllers.UserProfile.showProfile(username
 
 # Playlist Pages
 GET     /playlist                   controllers.Playlists.getById(id ?= null)
+GET     /play                       controllers.Playlists.play(id ?= null)
 POST    /playlist/create            controllers.Playlists.create()
 POST    /playlist/remove            controllers.Playlists.remove()
 POST    /playlist/:pl/addItem       controllers.Playlists.addItem(pl: String)

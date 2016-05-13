@@ -29,6 +29,22 @@ public class Playlists extends Controller {
     @Inject
     private FormFactory formFactory;
 
+    public Result play(String id) {
+
+        return ok(views.html.playlists.playpage.render(null, null));
+/*
+        if (id == null || id.isEmpty()) {
+            return movedPermanently(routes.Application.index());
+        } else if (!UID_PATTERN.matcher(id).matches()) {
+            return playlistNotFound();
+        }
+        Playlist playlist = Playlist.find.where().eq("id", id).findUnique();
+        if (playlist == null) {
+            return playlistNotFound();
+        }
+        return ok(views.html.playlists.playpage.render(playlist, playlist.getListItems()));*/
+    }
+
     public Result getById(String id) {
         if (id == null || id.isEmpty()) {
             /* Empty id should be redirected to main page */
