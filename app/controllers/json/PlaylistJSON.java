@@ -32,7 +32,7 @@ public class PlaylistJSON extends Controller {
         }
 
         Playlist playlist = Playlist.find.where().eq("id", playlistId).findUnique();
-        if (playlist == null) {
+        if (playlist == null || playlist.getSize() <= 0) {
             return notFound();
 /*            JSONObject emptyResult = new JSONObject();
             try {
@@ -58,7 +58,7 @@ public class PlaylistJSON extends Controller {
         /* Manual query required */
         String sql = "select u.username as owner, p.title, p.id, p.size from playlist p " +
                 " inner join users u on u._id = p.owner__id " +
-                " where p.is_private = :isPrivate";
+                " where p.is_private = :isPrivate and p.size > 0";
         List<SqlRow> sqlResult = new ArrayList<>();
         sqlResult.addAll(Ebean.createSqlQuery(sql)
                 .setParameter("isPrivate", false)

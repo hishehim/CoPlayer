@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Mike on 5/12/2016.
  */
-class YouTube extends DomainWrapper {
+final class YouTube extends DomainWrapper {
     private static final Pattern ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{5,20}$");
     private static final String embeddedPrefix = "https://www.youtube.com/embed/";
 

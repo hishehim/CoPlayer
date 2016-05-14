@@ -6,7 +6,6 @@
 GET     /                           controllers.Application.index()
 
 # User Pages
-GET     /login                      controllers.Application.getlogin()
 POST    /login                      controllers.Application.login()
 
 GET     /signup                     controllers.Application.signup()

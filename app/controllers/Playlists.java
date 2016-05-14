@@ -24,22 +24,23 @@ public class Playlists extends Controller {
     @Inject
     private FormFactory formFactory;
 
-    public Result play(String id) {
+    public Result play(String playlistId) {
 
         //return ok(views.html.playlists.playpage.render(null, null));
 
-        if (id == null || id.isEmpty()) {
+        if (playlistId == null || playlistId.isEmpty()) {
             return movedPermanently(routes.Application.index());
-        } else if (!Playlist.UID_PATTERN.matcher(id).matches()) {
+        } else if (!Playlist.UID_PATTERN.matcher(playlistId).matches()) {
             return playlistNotFound();
         }
-        Playlist playlist = Playlist.find.where().eq("id", id).findUnique();
-        if (playlist == null) {
+        Playlist playlist = Playlist.find.where().eq("id", playlistId).findUnique();
+        if (playlist == null || playlist.getSize() <= 0) {
             return playlistNotFound();
         }
         return ok(views.html.playlists.playpage.render(playlist, playlist.getTracks()));
     }
 
+    @Security.Authenticated(UserAuth.class)
     public Result getById(String id) {
         if (id == null || id.isEmpty()) {
             /* Empty id should be redirected to main page */

@@ -10,9 +10,11 @@
         <input type="hidden" name="pl-id" value="@playlist.getId()">
         <button>delete</button>
     </form>
-    <a href="@routes.Playlists.play(playlist.getId())">
-        <button>play</button>
-    </a>
+    @if(playlist.getSize() > 0) {
+        <a href="@routes.Playlists.play(playlist.getId())">
+            <button>play</button>
+        </a>
+    }
     <p>Links: @playlist.getSize()</p>
     <hr>
     <form action="@routes.Playlists.addItem(playlist.getId())" method="post">
