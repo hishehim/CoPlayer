@@ -1,20 +1,28 @@
 
 
 var playlist = [
-    {type: 'youtube', id: 'yVnHLn1Uapc'},
+    {type: 'youtube', id: 'XsTjI75uEUQ'},
     {type: 'soundcloud', id: 'relaxdaily/relaxing-piano-music-work_study_meditation' },
-    {type: 'youtube', id: '0Bmhjf0rKe8'},
+    {type: 'youtube', id: 'mOO5qRjVFLw'},
     {type: 'soundcloud', id: 'relaxdaily/relaxing-music-calm-studying-yoga' },
-    {type: 'youtube', id: 'YjA8ENHSmxY'},
+    {type: 'youtube', id: 'WZjFMj7OHTw'},
     {type: 'soundcloud', id: 'sai-ram-49/charlie-puth-see-you-again-piano-demo-version-without-wiz-khalifafurious-7-soundtrack' },
+    {type: 'youtube', id: 'l1Q-cI4RE5s'},
+    {type: 'soundcloud', id: 'didlybom/ryuichi-sakamoto-merry-christmas-mr-lawrence'},
 ];
 
 
 var curIndex = 0;
+var repeatAll = false;
+/**
+Wrapper player object used to control the current playing player
+*/
+
 var playingPlayer = {
-    play: function(){ return; },
-    pause: function(){ return; },
-    stop: function(){ return; }
+    player: "",
+    play: function() { return; },
+    pause: function() { return; },
+    stop: function() { return; },
 };
 //var currFrame = null;
 
@@ -35,38 +43,59 @@ function initializeSC(){
     scplayer = SC.Widget(widgetIframe);
     $('#sc-player').hide();
     scplayer.bind(SC.Widget.Events.READY, function() {
+        /* Callback for widget has initialized
+         * this part will only be called once per page load
+         */
         scReady = true;
+
+        /* On audio ended, play next track */
         scplayer.bind(SC.Widget.Events.FINISH, function() {
-            //scplayer.pause();
             playNext();
         });
+        /* On error, play next track */
         scplayer.bind(SC.Widget.Events.ERROR, function() {
             playNext();
         });
+
+        scplayer.unbind(SC.Widget.Events.READY);
     });
 }
 
 function loadSC(url) {
     scplayer.load(url,{
-          show_artwork: false,
-          auto_play: true,
-          liking: false,
-          buying: false,
-          download: false,
-          show_comments: false,
-          show_playcount: false,
-    });
+              auto_play: true,
+              liking: false,
+              buying: false,
+              sharing: true,
+              download: false,
+              show_artwork: false,
+              show_comments: false,
+              show_playcount: false,
+              show_user: false,
+              visual: true,
+              hide_related: true,
+        });
+    playingPlayer.player = "sc";
     playingPlayer.play = function(){scplayer.play();};
     playingPlayer.pause = function(){scplayer.pause();};
     playingPlayer.stop = function(){scplayer.pause();};
+    /*
+    * When widget start playing (due to autoplay), check to ensure
+    * user has not switch to another player.
+    */
+    scplayer.bind(SC.Widget.Events.PLAY, function() {
+        if (playingPlayer.player != "sc") {
+            /* if current player is not soundcloud, stop player */
+            scplayer.pause();
+        }
+        scplayer.unbind(SC.Widget.Events.PLAY);
+    });
 }
 
 function scPlay(url) {
-    playingPlayer.stop();
     showPlayer($('#sc-player'));
     loadSC(genSCLink(url));
 }
-
 
 /* youtube player control */
 function initializeYT() {
@@ -81,17 +110,15 @@ var ytReady = false;
 
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-player', {
-      height: '390',
-      width: '640',
       playerVars: {
-        'autoplay': 0,
+        'autoplay': 1,
         'enablejsapi':1,
         'origin': document.domain,
         'rel': 0,
         'fs': 0
       },
       events: {
-        'onReady': onPlayerReady,
+        'onReady': onPlayerInitialized,
         'onError': onPlayerError,
         'onStateChange': onPlayerStateChange
       }
@@ -100,13 +127,21 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerError(event) {
-    alert("error");
+    playNext();
+}
+
+function onPlayerReady(event) {
+    if (playingPlayer.player == "yt") {
+        event.target.playVideo();
+    }
+    //event.target.playVideo();
 }
 
 // play is ready to take api calls
-function onPlayerReady(event) {
+function onPlayerInitialized(event) {
     ytReady = true;
-    event.target.removeEventListener("onReady", "onPlayerReady");
+    event.target.removeEventListener("onReady", "onPlayerInitialized");
+    event.target.addEventListener("onReady", "onPlayerReady");
 }
 
 // when video ends
@@ -120,16 +155,21 @@ function onPlayerStateChange(event) {
 }
 
 function ytPlay(id) {
-    playingPlayer.stop();
-    showPlayer($('#yt-player'));
+    ytPlayer.loadVideoById(id);
+    playingPlayer.player = "yt";
     playingPlayer.play = function(){ytPlayer.playVideo();};
     playingPlayer.pause = function(){ytPlayer.pauseVideo();};
     playingPlayer.stop = function(){ytPlayer.stopVideo();};
-    ytPlayer.loadVideoById(id);
+    showPlayer($('#yt-player'));
 }
 
 function play(index) {
-    if (index < playlist.length) {
+    if (repeatAll) {
+        index = (index + playlist.length) % playlist.length;
+    }
+    if (index < playlist.length && index >= 0) {
+
+        playingPlayer.stop();
         switch (playlist[index].type) {
             case 'youtube':
                 ytPlay(playlist[index].id);
@@ -153,8 +193,13 @@ function playNext() {
     play(curIndex + 1);
 }
 
+function toggleRepeatAll() {
+    repeatAll = !(repeatAll);
+}
+
 function beginPlaylist() {
     if (ytReady === false || scReady === false) {
+        /* wait for all players to be ready */
         setTimeout(beginPlaylist, 100);
     } else {
         $("#player-nav").show();
@@ -163,9 +208,27 @@ function beginPlaylist() {
     }
 }
 
-$(document).ready(function(){
+function populate() {
+    var trackList = document.getElementById("track-list");
+    $(playlist).each(function(i,item) {
+        var w = document.createElement('li');
+        w.className = "playlist-item-wrapper";
+        var a = document.createElement('a');
+        $(a).click(function(){play(i);});
+        a.className = "playlist-item";
+        a.href = "#";
+        a.appendChild(document.createTextNode(item.type));
+        a.appendChild(document.createElement('br'));
+        a.appendChild(document.createTextNode(item.id));
+        w.appendChild(a);
+        trackList.appendChild(w);
+    });
+}
 
-        $("#player-nav").hide();
+
+$(document).ready(function(){
+    $("#player-nav").hide();
+    populate();
     initializeYT();
     initializeSC();
     beginPlaylist();

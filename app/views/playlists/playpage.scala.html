@@ -5,39 +5,30 @@
     <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
     <script type="text/javascript" src="https://w.soundcloud.com/player/api.js"></script>
     <script src='@routes.Assets.versioned("javascripts/player.js")'></script>
-<style>
-    .player {
-    height: 100%;
-    width: 100%;
-    min-height: 200px;
-    min-width: 200px;
-    display: 'none';
-    max-height: 720px;
-    }
-    .mainContainer(){
-        height: 100%;
-        width: 100%;
-    }
-</style>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/player.css")'>
+
 }
 
 @main("play page", scripts) {
-    <div id="player-nav">
-        <button id="btn-prev" onclick="playPrev()">Prev</button>
-        <button id="btn-play" onclick="playingPlayer.play()">play</button>
-        <button id="btn-pause" onclick="playingPlayer.pause()">pause</button>
-        <button id="btn-next" onclick="playNext()">Next</button>
-        <hr>
-        <button onclick="play(0)">1</button>
-        <button onclick="play(1)">2</button>
-        <button onclick="play(2)">3</button>
-        <button onclick="play(3)">4</button>
-        <button onclick="play(4)">5</button>
-        <button onclick="play(5)">6</button>
-        <button onclick="play(6)">7</button>
-        <button onclick="play(7)">8</button>
-    </div>
 
-    <div id="yt-player" class="player"></div>
-    <iframe id="sc-player" class="player" src="https://w.soundcloud.com/player/?url=" scrolling="no" frameborder="no"></iframe>
+    <div id="playlist-title-bar">
+        <h1>Title</h1>
+    </div>
+    <div class="main-wrapper">
+    <div class="player-wrapper">
+        <div id="yt-player" class="player"></div>
+        <iframe id="sc-player" class="player" src="https://w.soundcloud.com/player/?url=" scrolling="no" frameborder="no"></iframe>
+    </div>
+    <div class="player-right-panel">
+        <div class="player-ctrl">
+            <button id="btn-prev" onclick="playPrev()">Prev</button>
+            <button id="btn-play" class="btn-play" onclick="playingPlayer.play()">play</button>
+            <button id="btn-pause" class="btn-play" onclick="playingPlayer.pause()">pause</button>
+            <button id="btn-next" onclick="playNext()">Next</button>
+            <button id="btn-repeat" onclick="toggleRepeatAll()">Repeat All</button>
+        </div>
+        <ul id="track-list" class="player-track-list">
+        </ul>
+    </div>
+    </div>
 }
