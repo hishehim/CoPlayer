@@ -140,6 +140,7 @@ public class Application extends Controller {
                 routes.javascript.Playlists.play(),
                 routes.javascript.Playlists.getById(),
                 routes.javascript.UserProfile.showProfile(),
+                controllers.json.routes.javascript.PlaylistJSON.getPlaylist(),
                 controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
                 controllers.json.routes.javascript.PlaylistJSON.getUsrPublicList(),
                 controllers.json.routes.javascript.PlaylistJSON.getUsrPrivateList()

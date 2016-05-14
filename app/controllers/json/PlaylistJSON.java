@@ -6,10 +6,6 @@ import controllers.Application;
 import controllers.UserAuth;
 import models.Playlist;
 import models.Users;
-import org.h2.engine.User;
-import org.json.JSONException;
-import org.json.JSONObject;
-import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -27,17 +23,30 @@ import static com.avaje.ebean.Ebean.createSqlQuery;
 public class PlaylistJSON extends Controller {
 
     public Result getPlaylist(String playlistId) {
+        if (playlistId == null) {
+            return notFound();
+        }
+        if (!Playlist.UID_PATTERN.matcher(playlistId).matches()) {
+            /* invalid id pattern */
+            return notFound();
+        }
 
-        Playlist playlist = Playlist.find.where().eq("uid", playlistId).findUnique();
-
+        Playlist playlist = Playlist.find.where().eq("id", playlistId).findUnique();
         if (playlist == null) {
-            JSONObject emptyResult = new JSONObject();
+            return notFound();
+/*            JSONObject emptyResult = new JSONObject();
             try {
                 emptyResult.put("error", "does not exist");
             } catch (JSONException ex) {
                 Logger.error("Error with JSONObject.put(constants)", ex);
             }
-            return ok(Json.toJson(emptyResult));
+            return notFound(Json.toJson(emptyResult));*/
+        }
+        if (playlist.isPrivate()) {
+            String curUsrId = Application.getSessionUsrId();
+            if (!playlist.getOwner().getUsername().equals(curUsrId)) {
+                return unauthorized();
+            }
         }
         return ok(Json.toJson(playlist));
     }
@@ -58,8 +67,8 @@ public class PlaylistJSON extends Controller {
     }
 
     public Result getUsrPublicList(String username) {
-        if (username == null || username.isEmpty()) {
-            username = session("username");
+        if (username == null) {
+            return notFound();
         }
         Users user = Users.find.where().eq("username", username).findUnique();
         if (user == null) {

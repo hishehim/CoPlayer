@@ -1,6 +1,7 @@
 package models;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.validation.Constraints;
 import statics.Domain;
 
@@ -21,11 +22,13 @@ public class PlaylistItem extends Model {
     @Id
     @GeneratedValue
     @Column(name = "_id")
+    @JsonIgnore
     private long rowId;
 
     @Constraints.Required
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "parent__id")
+    @JsonIgnore
     private Playlist parent;
 
     /**
@@ -42,9 +45,6 @@ public class PlaylistItem extends Model {
      * */
     @Constraints.Required
     private String link;
-
-    @Constraints.Required
-    private String title;
 
     /**
      * used prevent initialization without the use of factory method
@@ -79,30 +79,18 @@ public class PlaylistItem extends Model {
     }
 
 
+    @JsonIgnore
     public long getId() {
         return rowId;
     }
 
-    @PrePersist
-    private void prePersist() {
-        parent.increaseSize();
-    }
-
-    @PostRemove
-    private void postRemove() {
-        parent.decreaseSize();
-    }
-
+    @JsonIgnore
     public Playlist getParent() {
         return parent;
     }
 
     public String getSourceType() {
         return sourceType;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getLink() {

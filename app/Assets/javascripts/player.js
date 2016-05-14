@@ -1,5 +1,6 @@
 
 
+/*
 var playlist = [
     {type: 'youtube', id: 'XsTjI75uEUQ'},
     {type: 'soundcloud', id: 'relaxdaily/relaxing-piano-music-work_study_meditation' },
@@ -10,7 +11,8 @@ var playlist = [
     {type: 'youtube', id: 'l1Q-cI4RE5s'},
     {type: 'soundcloud', id: 'didlybom/ryuichi-sakamoto-merry-christmas-mr-lawrence'},
 ];
-
+*/
+var playlist = [];
 
 var curIndex = 0;
 var repeatAll = false;
@@ -170,12 +172,12 @@ function play(index) {
     if (index < playlist.length && index >= 0) {
 
         playingPlayer.stop();
-        switch (playlist[index].type) {
+        switch (playlist[index].sourceType.toLowerCase()) {
             case 'youtube':
-                ytPlay(playlist[index].id);
+                ytPlay(playlist[index].link);
                 break;
             case 'soundcloud':
-                scPlay(playlist[index].id);
+                scPlay(playlist[index].link);
                 break;
             default:
                 console.log(playlist[index]);
@@ -202,34 +204,56 @@ function beginPlaylist() {
         /* wait for all players to be ready */
         setTimeout(beginPlaylist, 100);
     } else {
-        $("#player-nav").show();
         curIndex = 0;
         play(0);
     }
 }
 
+function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
 function populate() {
-    var trackList = document.getElementById("track-list");
-    $(playlist).each(function(i,item) {
-        var w = document.createElement('li');
-        w.className = "playlist-item-wrapper";
-        var a = document.createElement('a');
-        $(a).click(function(){play(i);});
-        a.className = "playlist-item";
-        a.href = "#";
-        a.appendChild(document.createTextNode(item.type));
-        a.appendChild(document.createElement('br'));
-        a.appendChild(document.createTextNode(item.id));
-        w.appendChild(a);
-        trackList.appendChild(w);
+    var id = getQueryVariable("id");
+    $.ajax({
+        dataType: "json",
+        url: jsRouter.controllers.json.PlaylistJSON.getPlaylist(id).url,
+        success: function(data) {
+            var trackList = document.getElementById("track-list");
+            playlist = data.tracks;
+            $(playlist).each(function(i,item) {
+                var w = document.createElement('li');
+                w.className = "playlist-item-wrapper";
+                var a = document.createElement('a');
+                $(a).click(function(event){
+                    event.preventDefault();
+                    play(i);}
+                );
+                a.className = "playlist-item";
+                a.href = "undefined";
+                a.appendChild(document.createTextNode(item.sourceType));
+                a.appendChild(document.createElement('br'));
+                a.appendChild(document.createTextNode(item.link));
+                w.appendChild(a);
+                trackList.appendChild(w);
+            });
+        }
+    }).fail(function(data, status, err) {
+        alert("unable to fetch playlist data");
+        console.error("getJson failed: " + status + " error: " + err);
     });
 }
 
-
 $(document).ready(function(){
-    $("#player-nav").hide();
-    populate();
     initializeYT();
     initializeSC();
+    populate();
     beginPlaylist();
 });

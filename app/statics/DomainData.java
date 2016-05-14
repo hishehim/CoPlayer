@@ -3,6 +3,7 @@ package statics;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -55,14 +56,15 @@ public final class DomainData {
      * @param domain Indicates the domain of the original source (ie. YouTube, SoundCloud, etc...)
      * @return If domain is not null, return the corresponding DomainWrapper object for the given domain
      * */
-    public static DomainWrapper getDomainWrapper(Domain domain) {
+    @Nonnull
+    public static DomainWrapper getDomainWrapper(@Nonnull Domain domain) {
         switch (domain) {
             case YOUTUBE:
                 return youtube;
             case SOUNDCLOUD:
                 return soundcloud;
             default:
-                return null;
+                return new EmptyDomain();
         }
     }
 

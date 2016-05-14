@@ -10,12 +10,16 @@
         <input type="hidden" name="pl-id" value="@playlist.getId()">
         <button>delete</button>
     </form>
+    <a href="@routes.Playlists.play(playlist.getId())">
+        <button>play</button>
+    </a>
+    <p>Links: @playlist.getSize()</p>
     <hr>
     <form action="@routes.Playlists.addItem(playlist.getId())" method="post">
         <label>Video URL</label>
         @* <!--TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
          --> *@
-        <input id="user_url" type="url" name="url" placeholder="link to source" required>
+        <input id="user_url" name="url" placeholder="link to source" required>
         <select id="srcTypeSelector" name="source_type">
             @* <!--TODO: AUTO-DETECT DOMAIN OF GIVEN LINK AND SWITCH OPTIONS ACCORDINGLY
              --> *@
@@ -28,9 +32,8 @@
     }
     <hr>
     <table id="pl-item-container">
-        @for(item <- playlist.getListItems()) {
-            <tr id="new item @item.getTitle()">
-                @*<td>@item.getTitle()</td>*@
+        @for(item <- playlist.getTracks()) {
+            <tr>
                 <td>@item.getLink()</td>
                 @if(isOwner){
                     <td>

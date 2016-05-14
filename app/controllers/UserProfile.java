@@ -14,6 +14,9 @@ import java.util.List;
 public class UserProfile extends Controller {
 
     public Result showProfile(String username){
+        if (username == null) {
+            return movedPermanently(routes.Application.index());
+        }
         /*if(Application.getSessionUsrId() != rowID){
             flash().put("error","Nice try, but that is not your profile!");
             return redirect(routes.Application.index());
@@ -23,7 +26,7 @@ public class UserProfile extends Controller {
             return notFound(username + " user not found");
         }
 
-        @Nonnull List<Playlist> userPlaylist = user.getPlaylists();
+        //@Nonnull List<Playlist> userPlaylist = user.getPlaylists();
         //create a new list if user did not have a playlists
         /***Need a Profile View Page***/
         return ok(views.html.user.profile.render(user,

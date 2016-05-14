@@ -1,22 +1,3 @@
-/* Create simple div element with text in it */
-function createTextDiv(text) {
-    var textBox = document.createElement("div");
-    textBox.appendChild(document.createTextNode(text));
-    return textBox;
-}
-
-/* Create simple div with anchor embedded inside
-* May be changed to simple anchor element in the future
-*/
-function createHyperLink(text, link, type) {
-    var rootDiv = document.createElement("div");
-    var anchor = document.createElement("A");
-    anchor.appendChild(document.createTextNode(text));
-    anchor.href = link;
-    rootDiv.appendChild(anchor);
-    return rootDiv;
-}
-
 /* Function to create the container that holds each playlist data in index page */
 function createListContainer(playlist) {
     var playlistContainer = document.createElement("div");

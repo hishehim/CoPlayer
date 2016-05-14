@@ -11,11 +11,11 @@ import java.net.URL;
  */
 public abstract class DomainWrapper {
 
-    /**
+    /*
      * Test if the given identifier for the given domain links to a existing file
      * @param identifier The unique identifier for the given video or audio file for the given domain
      * @return true if the given identifier generates a valid link for embedding. False otherwise
-     * */
+     * *
     public final boolean validate(String identifier) {
         int responseCode = 0;
         try {
@@ -31,7 +31,8 @@ public abstract class DomainWrapper {
             return false;
         }
         return (responseCode == 200);
-    }
+    }*/
+    public abstract boolean validate(String identifier);
 
     /**
      * Generates the http link used for embedding

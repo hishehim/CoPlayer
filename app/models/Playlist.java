@@ -6,6 +6,7 @@ package models;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.io.BaseEncoding;
 import play.data.validation.Constraints;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static controllers.Application.random;
 
@@ -28,6 +30,9 @@ import static controllers.Application.random;
 @Entity
 public class Playlist extends Model {
 
+    @Transient
+    public static final Pattern UID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{12,20}$");
+
     @Id
     @GeneratedValue
     @Column(name = "_id")
@@ -36,6 +41,7 @@ public class Playlist extends Model {
     @ManyToOne(fetch = FetchType.LAZY)
     @Constraints.Required
     @Column(name = "owner__id")
+    @JsonIgnore
     private Users owner;
 
     @Constraints.Required
@@ -57,7 +63,7 @@ public class Playlist extends Model {
     private int size = 0;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<PlaylistItem> listItems = new ArrayList<>();
+    private List<PlaylistItem> tracks = new ArrayList<>();
 
     /* Used to find entire object */
     public static final Finder<String, Playlist> find = new Finder<String, Playlist>(Playlist.class);
@@ -86,14 +92,17 @@ public class Playlist extends Model {
         return null;
     }
 
+    @JsonIgnore
     public long getRowId() { return rowId; }
 
     public Users getOwner() { return owner; }
 
+    @JsonIgnore
     public boolean isPrivate() {
         return isPrivate;
     }
 
+    @JsonIgnore
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -110,12 +119,12 @@ public class Playlist extends Model {
         return size;
     }
 
-    void increaseSize() { size++; }
+    public void increaseSize() { size++; }
 
-    void decreaseSize() { size--; }
+    public void decreaseSize() { if (size > 0) size--; }
 
-    public List<PlaylistItem> getListItems() {
-        return listItems;
+    public List<PlaylistItem> getTracks() {
+        return tracks;
     }
 
     private static String genID() {

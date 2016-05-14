@@ -6,16 +6,15 @@
     <script type="text/javascript" src="https://w.soundcloud.com/player/api.js"></script>
     <script src='@routes.Assets.versioned("javascripts/player.js")'></script>
     <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/player.css")'>
-
 }
 
-@main("play page", scripts) {
+@main(playlist.getTitle(), scripts) {
 
     <div id="playlist-title-bar">
-        <h1>Title</h1>
+        <h1>@playlist.getTitle()</h1>
     </div>
     <div class="main-wrapper">
-    <div class="player-wrapper">
+    <div id="playlist.getId()" class="player-wrapper">
         <div id="yt-player" class="player"></div>
         <iframe id="sc-player" class="player" src="https://w.soundcloud.com/player/?url=" scrolling="no" frameborder="no"></iframe>
     </div>

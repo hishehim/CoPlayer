@@ -3,28 +3,13 @@
 @script = {
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
-    <script src='@routes.Assets.versioned("javascripts/profilePage.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/utility.js")'></script>
     @if(isOwner) {
-    <script src='@routes.Assets.versioned("javascripts/tabTable.js")'></script>
-    <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("stylesheets/tabTable.css")'>
-    <script>
-        $(document).ready(function(){
-            loadPL('@json.routes.PlaylistJSON.getUsrPublicList()', 'public-pl');
-            loadPL('@json.routes.PlaylistJSON.getUsrPrivateList()', 'private-pl');
-            @*
-            loadPL(jsRouter.controllers.json.PlaylistJSON.getUsrPublicList(), 'public-pl');
-            loadPL(jsRouter.controllers.json.PlaylistJSON.getUsrPrivateList(), 'private-pl');
-            *@
-            document.getElementById('public-pl').style.display="block"
-        });
-    </script>
+        <script src='@routes.Assets.versioned("javascripts/tabTable.js")'></script>
+        <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("stylesheets/tabTable.css")'>
+        <script src='@routes.Assets.versioned("javascripts/profilePagePr.js")' async></script>
     } else {
-    <script>
-        $(document).ready(function(){
-            loadPL('@json.routes.PlaylistJSON.getUsrPublicList(user.getUsername())', 'public-pl');
-            @*loadPL(jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist(@user.getUsername()), 'public-pl');*@
-        });
-    </script>
+        <script src='@routes.Assets.versioned("javascripts/profilePage.js")' async></script>
     }
 }
 
