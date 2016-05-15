@@ -54,3 +54,11 @@ button.btn {
 label.error {
     color: #FF0000;
 }
+
+label.control-label {
+    width: 100%;
+}
+
+div.modal-content {
+    min-width: 300px;
+}
