@@ -58,7 +58,7 @@ public class Users extends Model{
     public static Users createUser(@Nonnull String username, @Nonnull String password,
                                    @Nonnull String email){
         Users nUser = new Users();
-        nUser.username = username;
+        nUser.username = username.toLowerCase();
         nUser.password_hash = BCrypt.hashpw(password,BCrypt.gensalt());
         nUser.email = email;
         nUser.id = genUID();

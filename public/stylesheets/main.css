@@ -34,3 +34,23 @@ body {
         padding-top: 0px;
     }
 }
+
+nav.navbar {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #424242;
+}
+
+div.container-fluid {
+    max-width: 1280px;
+    background-color: transparent;
+}
+
+button.btn {
+    background-color: #5cb85c;
+}
+
+label.error {
+    color: #FF0000;
+}

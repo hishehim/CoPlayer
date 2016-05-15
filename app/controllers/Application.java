@@ -41,14 +41,21 @@ public class Application extends Controller {
     }
 
     public Result login() {
+
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
             return badRequest(views.html.index.render(""));
         }
-        String username = userForm.data().get("username");
+
+        String username = userForm.data().get("username").toLowerCase();
         String password = userForm.data().get("password");
 
-        Users user = Users.find.where().eq("username",username).findUnique();
+        Users user = null;
+        if (username.contains("@")) {
+            user = Users.find.where().eq("email", username).findUnique();
+        } else {
+            user = Users.find.where().eq("username",username).findUnique();
+        }
         if (user != null && user.authenticate(password)){
             login(user);
             flash("success","Welcome back " +user.getUsername());
@@ -57,7 +64,7 @@ public class Application extends Controller {
             return redirect(routes.Application.index());
         }
 
-        return redirect(routes.UserProfile.showProfile(username));
+        return redirect(routes.UserProfile.showProfile(user.getUsername()));
     }
 
     private void login(Users user) {
@@ -82,10 +89,11 @@ public class Application extends Controller {
         String password = userForm.data().get("password");
         String email = userForm.data().get("email");
 
+        /*
         if(password.isEmpty()||username.isEmpty()||email.isEmpty()){
             flash("error" , "Empty Fields");
             return redirect(routes.Application.signup());
-        }
+        }*/
         //Check for valid characters for username and password
         if(!username_pattern.matcher(username).matches() || !password_pattern.matcher(password).matches()){
             flash("error","Invalid Character");

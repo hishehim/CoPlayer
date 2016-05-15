@@ -22,27 +22,18 @@
         }
     </head>
 
-
-    @* HEADER *@
-
     @if(!session().containsKey("username")){
         @user.login()
         @user.signup()
     }
-
-    @* END HEADER *@
-
-    <hr>
 
     <body>
     <div id="container">
         @navigation()
 
         @if(flash.containsKey("success")) {
-        @*<p>Success!:</p>*@
         <p class="text-center alert alert-success">@flash.get("success")</p>
         } else { @if(flash.containsKey("error")) {
-        @*<p>Error!:</p>*@
         <p class="text-center alert alert-danger">@flash.get("error")</p>
         }}
 
