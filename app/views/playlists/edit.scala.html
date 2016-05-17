@@ -3,32 +3,69 @@
 @import statics.DomainData
 
 @main(playlist.getTitle()) {
+
+    <div class="modal" id="add-item" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding:40px 50px;">
+                    <form role="form" action="@routes.Playlists.addItem(playlist.getId())" method="post">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="item_url">
+                                url</label>
+                            <input id="item_url" type="text" name="item_url" class="form-control" placeholder="url">
+                        </div>
+                        <button class="btn btn-success btn-block">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="delete-playlist" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="padding:35px 50px;">
+                    <h4>Are you sure you want to delete "@playlist.getTitle()"?</h4>
+                </div>
+                <div class="modal-footer">
+                    <form role="form" action="@routes.Playlists.remove(playlist.getId())" method="post">
+                        <button class="btn btn-danger btn-ok" type="submit">Delete</button>
+                    </form>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h1>@playlist.getTitle()</h1>
-    <form action="@routes.Playlists.remove(playlist.getId())" method="post">
-        <input type="hidden" name="pl-id" value="@playlist.getId()">
-        <button class="btn btn-danger">delete</button>
-    </form>
     @if(playlist.getSize() > 0) {
-        <a href="@routes.Playlists.play(playlist.getId())">
-            <button>play</button>
-        </a>
+    <a href="@routes.Playlists.play(playlist.getId())">
+        <button class="btn btn-submit">play</button>
+    </a>
     }
-    <p>Links: @playlist.getSize()</p>
-    <hr>
-    <form action="@routes.Playlists.addItem(playlist.getId())" method="post">
+    <a href="#delete-playlist" role="button" class="btn btn-danger" data-toggle="modal">Delete</a>
+<!--    <form action="@routes.Playlists.remove(playlist.getId())" method="post">
+        <button class="btn btn-danger" type="submit" name="remove-playlist" value="delete"></button>
+    </form>-->
+
+    <a href="#add-item" role="button" class="btn btn-default" data-toggle="modal">Add Item</a>
+    <!--<form action="@routes.Playlists.addItem(playlist.getId())" method="post">
         <label>Video URL</label>
-        @* <!--TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
-         --> *@
+        @* &lt;!&ndash;TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
+             &ndash;&gt; *@
         <input id="user_url" name="url" placeholder="link to source" required>
         <select id="srcTypeSelector" name="source_type">
-            @* <!--TODO: AUTO-DETECT DOMAIN OF GIVEN LINK AND SWITCH OPTIONS ACCORDINGLY
-             --> *@
+            @* &lt;!&ndash;TODO: AUTO-DETECT DOMAIN OF GIVEN LINK AND SWITCH OPTIONS ACCORDINGLY
+                 &ndash;&gt; *@
             @for(srcDomain <- DomainData.domainList){
-                <option value="@srcDomain">@srcDomain</option>
+            <option value="@srcDomain">@srcDomain</option>
             }
         </select>
         <button>Add</button>
-    </form>
+    </form>-->
+
+    <p>Links: @playlist.getSize()</p>
+    <hr>
     <hr>
     <table id="pl-item-container">
         @for(item <- playlist.getTracks()) {

@@ -9,13 +9,14 @@
         <link rel="stylesheet" media="screen" href='@routes.Assets.versioned("stylesheets/main.css")'>
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
         <link rel="shortcut icon" type="image/png" href='@routes.Assets.versioned("images/favicon.png")'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
         @scripts
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         @if(!session().containsKey("username")) {
             @* scripts used for login *@
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-            <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
             @* scripts used for signup *@
             <script type="text/javascript" src='@routes.Assets.versioned("javascripts/jquery.validate.js")'></script>
             <script type="text/javascript" src='@routes.Assets.versioned("javascripts/signup.js")' ></script>
