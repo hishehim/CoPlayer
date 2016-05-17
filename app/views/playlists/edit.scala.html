@@ -2,13 +2,11 @@
 
 @import statics.DomainData
 
-@defining(session.containsKey("user_id") && (session.get("user_id").equals(user.getId()))) { isOwner =>
 @main(playlist.getTitle()) {
     <h1>@playlist.getTitle()</h1>
-    @if(isOwner){
-    <form action="@routes.Playlists.remove()" method="post">
+    <form action="@routes.Playlists.remove(playlist.getId())" method="post">
         <input type="hidden" name="pl-id" value="@playlist.getId()">
-        <button>delete</button>
+        <button class="btn btn-danger">delete</button>
     </form>
     @if(playlist.getSize() > 0) {
         <a href="@routes.Playlists.play(playlist.getId())">
@@ -31,22 +29,18 @@
         </select>
         <button>Add</button>
     </form>
-    }
     <hr>
     <table id="pl-item-container">
         @for(item <- playlist.getTracks()) {
             <tr>
                 <td>@item.getLink()</td>
-                @if(isOwner){
                     <td>
                         <form action="@routes.Playlists.removeItem(playlist.getId())" method="post">
                             <input type="hidden" name="it-id" value="@item.getId()">
                             <button>Delete</button>
                         </form>
                     </td>
-                }
             </tr>
         }
     </table>
-}
 }

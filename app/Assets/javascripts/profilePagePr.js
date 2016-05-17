@@ -8,7 +8,7 @@ createPlaylistContainer = function (playlist){
     playlistContainer.appendChild(
         createHyperLink(playlist.title, jsr.url));
 
-    jsr = jsRouter.controllers.Playlists.getById(playlist.id);
+    jsr = jsRouter.controllers.Playlists.edit(playlist.id);
     playlistContainer.appendChild(
         createHyperLink("edit", jsr.url));
 

@@ -41,7 +41,7 @@ public class Playlists extends Controller {
     }
 
     @Security.Authenticated(UserAuth.class)
-    public Result getById(String id) {
+    public Result edit(String id) {
         if (id == null || id.isEmpty()) {
             /* Empty id should be redirected to main page */
             return movedPermanently(routes.Application.index());
@@ -67,6 +67,7 @@ public class Playlists extends Controller {
 
         String userID = Application.getSessionUsrId();
         String title = playlistForm.get("title");
+
         if (title == null || title.isEmpty()) {
             flash("error", "Invalid title");
             return redirect(request().getHeader("referer"));
@@ -106,38 +107,35 @@ public class Playlists extends Controller {
             }
             nPlaylist.save();
             Ebean.commitTransaction();
-            return redirect(routes.Playlists.getById(nPlaylist.getId()));
+            return redirect(routes.Playlists.edit(nPlaylist.getId()));
         } finally {
             Ebean.endTransaction();
         }
     }
 
     @Security.Authenticated(UserAuth.class)
-    public Result remove() {
-        DynamicForm form = formFactory.form().bindFromRequest();
-        if (form.hasErrors()) {
-            return badRequest();
+    public Result remove(String playlistId) {
+        if (playlistId == null || playlistId.isEmpty()) {
+            return movedPermanently(routes.Application.index());
         }
-        String plId = form.get("pl-uid");
-
         String userID = Application.getSessionUsrId();
-
+        String username = Application.getSessionUsrName();
         Ebean.beginTransaction();
         try {
-            Playlist playlist = Playlist.find.where().eq("id", plId).findUnique();
+            Playlist playlist = Playlist.find.where().eq("id", playlistId).findUnique();
             if (playlist == null) {
                 return playlistNotFound();
             }
-            if (playlist.getOwner().getId().equals(userID)) {
+            if (!playlist.getOwner().getId().equals(userID)) {
                 //flash("error", "You're not the owner of the playlist");
-                return forbidden("You're not the owner");
+                return forbidden("You're not the owner " + playlist.getOwner().getId() + " " + userID);
             }
             playlist.delete();
             Ebean.commitTransaction();
         } finally {
             Ebean.endTransaction();
         }
-        return redirect(routes.UserProfile.showProfile(userID));
+        return redirect(routes.UserProfile.showProfile(username));
     }
 
     @Security.Authenticated(UserAuth.class)
@@ -155,13 +153,13 @@ public class Playlists extends Controller {
             flash("error", "Invalid source type");
             /* TODO redirect route should be the previous page or default to playlist page
             */
-            return redirect(routes.Playlists.getById(playlistID));
+            return redirect(routes.Playlists.edit(playlistID));
         }
 
         DomainWrapper wrapper = DomainData.getDomainWrapper(srcDomain);
         if (!wrapper.validate(urlStr)) {
             flash("error", "invalid identifier for " + srcTypeStr + " id");
-            return redirect(routes.Playlists.getById(playlistID));
+            return redirect(routes.Playlists.edit(playlistID));
         }
 
         String userID = Application.getSessionUsrId();
@@ -189,7 +187,7 @@ public class Playlists extends Controller {
         } finally {
             Ebean.endTransaction();
         }
-        return redirect(routes.Playlists.getById(playlistID));
+        return redirect(routes.Playlists.edit(playlistID));
     }
 
     @Security.Authenticated(UserAuth.class)
@@ -230,7 +228,7 @@ public class Playlists extends Controller {
         } finally {
             Ebean.endTransaction();
         }
-        return redirect(routes.Playlists.getById(playlistID));
+        return redirect(routes.Playlists.edit(playlistID));
     }
 
     private void getRedirectURL() {

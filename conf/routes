@@ -17,10 +17,10 @@ GET     /Users/                     controllers.UserProfile.showProfile(username
 
 
 # Playlist Pages
-GET     /playlist                   controllers.Playlists.getById(id ?= null)
+GET     /playlist                   controllers.Playlists.edit(id ?= null)
 GET     /play                       controllers.Playlists.play(id ?= null)
 POST    /playlist/create            controllers.Playlists.create()
-POST    /playlist/remove            controllers.Playlists.remove()
+POST    /playlist/remove            controllers.Playlists.remove(id ?= null)
 POST    /playlist/:pl/addItem       controllers.Playlists.addItem(pl: String)
 POST    /playlist/:pl/removeItem    controllers.Playlists.removeItem(pl: String)
 

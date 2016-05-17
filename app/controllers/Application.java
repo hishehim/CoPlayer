@@ -36,6 +36,14 @@ public class Application extends Controller {
         }
     }
 
+    public static String getSessionUsrName() {
+        if (session().containsKey("username")) {
+            return session("username");
+        } else {
+            return "";
+        }
+    }
+
     public Result index() {
         return ok(views.html.index.render("CoPlay"));
     }
@@ -140,7 +148,7 @@ public class Application extends Controller {
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",
                 routes.javascript.Playlists.play(),
-                routes.javascript.Playlists.getById(),
+                routes.javascript.Playlists.edit(),
                 routes.javascript.UserProfile.showProfile(),
                 controllers.json.routes.javascript.PlaylistJSON.getPlaylist(),
                 controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
