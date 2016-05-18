@@ -1,7 +1,16 @@
 /* Function to create the container that holds each playlist data in index page */
 function createListContainer(playlist) {
-    var playlistContainer = document.createElement("div");
-    playlistContainer.id = "playlist-" + playlist.id;
+    var playlistContainer = document.createElement("a");
+    playlistContainer.className = "list-group-item";
+    playlistContainer.href = jsRouter.controllers.Playlists.play(playlist.id).url;
+    var header = document.createElement('h4');
+    header.className = "list-group-item-heading";
+    $(header).text(playlist.title);
+    var body = document.createElement('p');
+    $(body).html(playlist.owner + "<br />size: " + playlist.size);
+    playlistContainer.appendChild(header);
+    playlistContainer.appendChild(body);
+/*    playlistContainer.id = "playlist-" + playlist.id;
     playlistContainer.style.outline = "1px solid #333333";
     var jsr = jsRouter.controllers.Playlists.play(playlist.id);
 
@@ -12,7 +21,7 @@ function createListContainer(playlist) {
     playlistContainer.appendChild(
         createHyperLink(playlist.owner, jsr.url));
 
-    playlistContainer.appendChild(createTextDiv(playlist.size.toString().concat(" links")));
+    playlistContainer.appendChild(createTextDiv(playlist.size.toString().concat(" links")));*/
     return playlistContainer;
 }
 

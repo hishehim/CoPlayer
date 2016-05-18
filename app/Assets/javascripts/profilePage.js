@@ -1,14 +1,15 @@
 
 createPlaylistContainer = function (playlist){
-    var playlistContainer = document.createElement("div");
-    playlistContainer.id = "playlist-" + playlist.id;
-    playlistContainer.style.outline = "1px solid #333333";
-    var jsr = jsRouter.controllers.Playlists.play(playlist.id);
-
-    playlistContainer.appendChild(
-        createHyperLink(playlist.title, jsr.url));
-
-    playlistContainer.appendChild(createTextDiv(playlist.size.toString().concat(" links")));
+    var playlistContainer = document.createElement("a");
+    playlistContainer.className = "list-group-item";
+    playlistContainer.href = jsRouter.controllers.Playlists.play(playlist.id).url;
+    var header = document.createElement('h4');
+    header.className = "list-group-item-heading";
+    $(header).text(playlist.title);
+    var body = document.createElement('p');
+    $(body).html("size: " + playlist.size);
+    playlistContainer.appendChild(header);
+    playlistContainer.appendChild(body);
     return playlistContainer;
 };
 

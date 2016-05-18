@@ -53,7 +53,7 @@ public class PlaylistJSON extends Controller {
                 return unauthorized();
             }
         }
-        return ok(Json.toJson(playlist));
+        return ok(Json.toJson(playlist)).as("text/json; charset='utf-8'");
     }
 
     /**

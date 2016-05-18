@@ -7,6 +7,7 @@ import statics.Domain;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Mike on 3/6/2016.
@@ -115,7 +116,11 @@ public class PlaylistItem extends Model {
     }
 
     public String getTitle() {
-        return srcTitle;
+        try {
+            return new String(srcTitle.getBytes("UTF8"), "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            return srcTitle;
+        }
     }
 
     public String getAuthor() {

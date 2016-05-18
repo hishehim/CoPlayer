@@ -238,12 +238,14 @@ function populate() {
                 );
                 a.className = "playlist-item";
                 a.href = "undefined";
-                a.appendChild(document.createTextNode(item.sourceType));
+                $(a).text(item.sourceType + "<br>" + item.title + "<br>" + item.author);
+/*                a.appendChild(document.createTextNode(item.sourceType));
                 a.appendChild(document.createElement('br'));
-                a.appendChild(document.createTextNode(item.link));
+                a.appendChild(document.createTextNode(item.link));*/
                 w.appendChild(a);
                 trackList.appendChild(w);
             });
+            console.log(data);
         }
     }).fail(function(data, status, err) {
         alert("unable to fetch playlist data");

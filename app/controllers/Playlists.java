@@ -14,6 +14,8 @@ import statics.Domain;
 import statics.DomainWrapper;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -140,6 +142,7 @@ public class Playlists extends Controller {
 
     @Security.Authenticated(UserAuth.class)
     public Result addItem(String playlistID) {
+
         DynamicForm nItemForm = formFactory.form().bindFromRequest();
         if (nItemForm.hasErrors()) {
             return badRequest();
@@ -151,7 +154,11 @@ public class Playlists extends Controller {
         String author = nItemForm.get("src-author");
         String thumbnail = nItemForm.get("src-img-url");
         Domain srcDomain = DomainData.getDomain(srcTypeStr);
-
+        try {
+            title = new String(title.getBytes("UTF8"), "UTF8");
+        } catch (UnsupportedEncodingException e ){
+            System.out.println("error" + e.getMessage());
+        }
         if (srcDomain == null) {
             flash("error", "Invalid source type");
             /* TODO redirect route should be the previous page or default to playlist page

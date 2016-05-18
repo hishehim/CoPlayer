@@ -4,17 +4,18 @@
     <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
     <script src='@routes.Assets.versioned("javascripts/utility.js")'></script>
     @if(isOwner) {
-        <script src='@routes.Assets.versioned("javascripts/tabTable.js")'></script>
-        <script src='@routes.Assets.versioned("javascripts/profilePagePr.js")' async></script>
-        <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("stylesheets/tabTable.css")'>
+    @*    <script src='@routes.Assets.versioned("javascripts/tabTable.js")'></script> *@
+        <script src='@routes.Assets.versioned("javascripts/profilePagePr.js")'></script>
+    @* <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("stylesheets/tabTable.css")'> *@
     } else {
-        <script src='@routes.Assets.versioned("javascripts/profilePage.js")' async></script>
+        <script src='@routes.Assets.versioned("javascripts/profilePage.js")'></script>
     }
 }
 
 @main(user.getUsername(), script) {
     <h1>@user.getUsername()</h1>
     <hr>
+    @*
     @if(isOwner) {
         <ul class="tab">
             <li><a id="public-tab" href="#" class="tabLink" onclick="openTab(event, 'public-pl')" onload="this.click()">Public</a></li>
@@ -28,5 +29,8 @@
     } else {
         <div id="public-pl">
         </div>
-    }
+    }*@
+    <div id="public-pl" class="list-group">
+
+    </div>
 }

@@ -96,8 +96,16 @@
                 <img class="thumbnail" src="@item.getThumbnailUrl()">
             </div>
             <div class="media-body">
-                <h4 class="media-heading">@item.getTitle()</h4>
-                <p>@item.getAuthor()</p>
+                <div class="pull-right">
+                    <form role="form" action="@routes.Playlists.removeItem(playlist.getId())" method="post">
+                        <input type="hidden" name="it-id" value="@item.getId()">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+                <div>
+                    <h4 class="media-heading">@item.getTitle()</h4>
+                    <p>@item.getAuthor()</p>
+                </div>
             </div>
         </div>
     </li>
