@@ -24,6 +24,9 @@
             <button id="btn-pause" class="btn-play" onclick="playingPlayer.pause()"><sapn class="glyphicon glyphicon-pause"></sapn></button>
             <button id="btn-next" onclick="playNext()"><span class="glyphicon glyphicon-forward"></span></button>
             <button id="btn-repeat" onclick="toggleRepeatAll()"><span class="glyphicon glyphicon-repeat"></span></button>
+            @if(session.get("username") == playlist.getOwner().getUsername()) {
+            <a href="@routes.Playlists.edit(playlist.getId())" role="button" type="button"><span class="glyphicon glyphicon-edit">Edit</span></a>
+            }
         </div>
         <div class="player-track-list">
             <ul id="track-list" class="list-group">
