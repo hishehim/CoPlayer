@@ -18,15 +18,21 @@
         <iframe id="sc-player" class="player embed-responsive-item" src="https://w.soundcloud.com/player/?url=" scrolling="no" frameborder="no"></iframe>
     </div>
     <div class="player-right-panel">
-        <div class="player-ctrl">
-            <button id="btn-prev" onclick="playPrev()">Prev</button>
-            <button id="btn-play" class="btn-play" onclick="playingPlayer.play()">play</button>
-            <button id="btn-pause" class="btn-play" onclick="playingPlayer.pause()">pause</button>
-            <button id="btn-next" onclick="playNext()">Next</button>
-            <button id="btn-repeat" onclick="toggleRepeatAll()">Repeat All</button>
+        <div class="player-ctrl btn-group">
+            <button id="btn-prev" class="btn btn-secondary" onclick="playPrev()"><span class="glyphicon glyphicon-backward"></span></button>
+            <button id="btn-play" class="btn btn-secondary" onclick="playingPlayer.play()"><span class="glyphicon glyphicon-play"></span></button>
+            <button id="btn-pause" class="btn btn-secondary" onclick="playingPlayer.pause()"><span class="glyphicon glyphicon-pause"></span></button>
+            <button id="btn-next" class="btn btn-secondary" onclick="playNext()"><span class="glyphicon glyphicon-forward"></span></button>
+            <!--
+            <button id="btn-repeat" onclick="toggleRepeatAll()"><span class="glyphicon glyphicon-repeat"></span></button>-->
+            @if(session.get("username") == playlist.getOwner().getUsername()) {
+            <a href="@routes.Playlists.edit(playlist.getId())"><button class="btn btn-secondary btn-sm"><span class="glyphicon glyphicon-edit">Edit</span></button></a>
+            }
         </div>
-        <ul id="track-list" class="player-track-list">
-        </ul>
+        <div class="player-track-list">
+            <div id="track-list" class="list-group">
+            </div>
+        </div>
     </div>
     </div>
 }

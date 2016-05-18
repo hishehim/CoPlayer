@@ -229,21 +229,36 @@ function populate() {
             var trackList = document.getElementById("track-list");
             playlist = data.tracks;
             $(playlist).each(function(i,item) {
-                var w = document.createElement('li');
-                w.className = "playlist-item-wrapper";
-                var a = document.createElement('a');
-                $(a).click(function(event){
+                //wrapper div
+                var d = document.createElement('a');
+                d.href = "undefined";
+                d.className = "list-group-item";
+                $(d).click(function(event){
                     event.preventDefault();
-                    play(i);}
-                );
-                a.className = "playlist-item";
-                a.href = "undefined";
-                $(a).text(item.sourceType + "<br>" + item.title + "<br>" + item.author);
-/*                a.appendChild(document.createTextNode(item.sourceType));
-                a.appendChild(document.createElement('br'));
-                a.appendChild(document.createTextNode(item.link));*/
-                w.appendChild(a);
-                trackList.appendChild(w);
+                    play(i);
+                });
+                //media div
+                var m = document.createElement('div');
+                m.classname = "media";
+                //media thumbnail
+                var m_left = document.createElement('div');
+                m_left.className = "media-left";
+                var img = document.createElement('img');
+                img.src = item.thumbnailUrl;
+                img.className = "thumbnail";
+                m_left.appendChild(img);
+                m.appendChild(m_left);
+                //media body
+                var m_body= document.createElement('div');
+                m_body.className= "media-body";
+                //media header
+                var m_header = document.createElement('div');
+                m_header.className = "media-heading";
+                $(m_header).text(item.title);
+                m_body.appendChild(m_header);
+                m.appendChild(m_body);
+                d.appendChild(m);
+                trackList.appendChild(d);
             });
             console.log(data);
         }
