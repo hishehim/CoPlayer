@@ -45,10 +45,16 @@
                     <h4>Are you sure you want to delete "@playlist.getTitle()"?</h4>
                 </div>
                 <div class="modal-footer">
-                    <form role="form" action="@routes.Playlists.remove(playlist.getId())" method="post">
-                        <button class="btn btn-danger btn-ok" type="submit">Delete</button>
-                    </form>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <div class="row" style="padding: 0px 20px;">
+                        <div class="pull-right" style="padding-left: 10px;">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                        <div class="pull-right">
+                            <form role="form" action="@routes.Playlists.remove(playlist.getId())" method="post">
+                                <button class="btn btn-danger btn-ok" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
