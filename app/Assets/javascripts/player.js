@@ -229,8 +229,29 @@ function populate() {
             var trackList = document.getElementById("track-list");
             playlist = data.tracks;
             $(playlist).each(function(i,item) {
-                var w = document.createElement('li');
+                //wrapper div
+                var w = document.createElement('div');
                 w.className = "playlist-item-wrapper";
+                //individual listitem
+                var d = document.createElement('li');
+                d.className = "list-group-item";
+                //media div
+                var m = document.createElement('div');
+                m.classname = "media";
+                //media thumbnail
+                var m_left = document.createElement('div');
+                m_left.className = "media-left";
+                var img = document.createElement('img');
+                img.src = item.thumbnailUrl;
+                img.className = "thumbnail";
+                m_left.appendChild(img);
+                m.appendChild(m_left);
+                //media body
+                var m_body= document.createElement('div');
+                m_body.className= "media-body";
+                //media header
+                var m_header = document.createElement('div');
+                m_header.className = "media-heading";
                 var a = document.createElement('a');
                 $(a).click(function(event){
                     event.preventDefault();
@@ -238,10 +259,15 @@ function populate() {
                 );
                 a.className = "playlist-item";
                 a.href = "undefined";
-                a.appendChild(document.createTextNode(item.sourceType));
+                a.appendChild(document.createTextNode(item.title));
                 a.appendChild(document.createElement('br'));
-                a.appendChild(document.createTextNode(item.link));
-                w.appendChild(a);
+                a.appendChild(document.createTextNode("Source: "+item.sourceType));
+                a.appendChild(document.createElement('br'));
+                m_header.appendChild(a);
+                m_body.appendChild(m_header);
+                m.appendChild(m_body);
+                d.appendChild(m);
+                w.appendChild(d);
                 trackList.appendChild(w);
             });
         }

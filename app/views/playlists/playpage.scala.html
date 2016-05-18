@@ -19,14 +19,16 @@
     </div>
     <div class="player-right-panel">
         <div class="player-ctrl">
-            <button id="btn-prev" onclick="playPrev()">Prev</button>
-            <button id="btn-play" class="btn-play" onclick="playingPlayer.play()">play</button>
-            <button id="btn-pause" class="btn-play" onclick="playingPlayer.pause()">pause</button>
-            <button id="btn-next" onclick="playNext()">Next</button>
-            <button id="btn-repeat" onclick="toggleRepeatAll()">Repeat All</button>
+            <button id="btn-prev" onclick="playPrev()"><span class="glyphicon glyphicon-backward"></span></button>
+            <button id="btn-play" class="btn-play" onclick="playingPlayer.play()"><span class="glyphicon glyphicon-play"></span></button>
+            <button id="btn-pause" class="btn-play" onclick="playingPlayer.pause()"><sapn class="glyphicon glyphicon-pause"></sapn></button>
+            <button id="btn-next" onclick="playNext()"><span class="glyphicon glyphicon-forward"></span></button>
+            <button id="btn-repeat" onclick="toggleRepeatAll()"><span class="glyphicon glyphicon-repeat"></span></button>
         </div>
-        <ul id="track-list" class="player-track-list">
-        </ul>
+        <div class="player-track-list">
+            <ul id="track-list" class="list-group">
+            </ul>
+        </div>
     </div>
     </div>
 }
