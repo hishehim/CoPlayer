@@ -23,7 +23,11 @@ public class UserProfile extends Controller {
         }*/
         Users user = Users.find.where().eq("username",username).findUnique();
         if(user ==  null){
-            return notFound(username + " user not found");
+            if (Application.getSessionUsrName().equals(username)) {
+                Application.logoutRoutine();
+            }
+            flash("error", "The user you're looking for does not exist");
+            return redirect(routes.Application.index());
         }
 
         //@Nonnull List<Playlist> userPlaylist = user.getPlaylists();

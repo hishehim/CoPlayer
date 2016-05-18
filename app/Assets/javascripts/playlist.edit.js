@@ -4,18 +4,33 @@ function extractYouTubeID(url) {
     return matches[1];
 }
 
-function setItemVal(id, src, title, author) {
+function setItemVal(data, id) {
+    /* input fields */
     $("#src-url").val(id);
-    $("#src-type").val(src);
-    $("#src-title-lb").text(title);
-    $("#src-author").text(author);
+    $("#src-type").val(data.provider_name);
+    $("#src-title").val(data.title);
+    $("#src-author").val(data.author_name);
+    $("#src-img-url").val(data.thumbnail_url);
+    /* visible */
+    $("#src-img").attr('src', data.thumbnail_url);
+    $("#src-provider-lb").text(data.provider_name);
+    $("#src-title-lb").text(data.title);
+    $("#src-author-lb").text(data.author_name);
 }
 
 function clearItemVal() {
+    /* visible */
     $("#src-title-lb").text('');
     $("#src-author").text('');
+    $("#src-provider-lb").text('');
+    $("#src-img").attr('src', '');
+
+    /* input fields */
     $("#src-url").val('');
     $("#src-type").val('');
+    $("#src-title").val('');
+    $("#src-author").val('');
+    $("#src-img-url").val('');
 }
 
 function showError(msg) {
@@ -51,14 +66,14 @@ function checkUrl() {
                         } else {
                             scId = scId.substring(5);
                         }
-                        setItemVal(scId, data.provider_name, data.title, data.author_name);
+                        setItemVal(data, scId);
                         $("#preview-container").show();
                     } else {
                         showError("Provided url does not link to single item");
                     }
                     break;
                 case "youtube":
-                    setItemVal(extractYouTubeID(data.url), data.provider_name, data.title, data.author_name);
+                    setItemVal(data, extractYouTubeID(data.url));
                     $("#preview-container").show();
                     break;
                 default:

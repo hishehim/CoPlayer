@@ -75,14 +75,14 @@ public class Application extends Controller {
         return redirect(routes.UserProfile.showProfile(user.getUsername()));
     }
 
-    private void login(Users user) {
+    private static void login(Users user) {
         logoutRoutine();
         session("user_id",user.getId());
         session("user_row_id", String.valueOf(user.getRowId()));
         session("username",user.getUsername());
     }
 
-    private void logoutRoutine() {
+    public static void logoutRoutine() {
         session().clear();
     }
 

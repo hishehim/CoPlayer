@@ -147,6 +147,9 @@ public class Playlists extends Controller {
 
         String urlStr = nItemForm.get("src-url");
         String srcTypeStr = nItemForm.get("src-type");
+        String title = nItemForm.get("src-title");
+        String author = nItemForm.get("src-author");
+        String thumbnail = nItemForm.get("src-img-url");
         Domain srcDomain = DomainData.getDomain(srcTypeStr);
 
         if (srcDomain == null) {
@@ -179,7 +182,7 @@ public class Playlists extends Controller {
                  */
                 return forbidden();
             }
-            PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcDomain);
+            PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcDomain, title, author, thumbnail);
             nItem.save();
             playlist.increaseSize();
             playlist.update();

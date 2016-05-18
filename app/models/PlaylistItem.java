@@ -40,12 +40,17 @@ public class PlaylistItem extends Model {
     @Column(name = "source_type")
     private String sourceType;
 
-    /**
-     * Embedded video link
-     * */
     @Constraints.Required
+    @Column(name = "identifier")
     private String link;
 
+    private String thumbnailUrl;
+
+    @Column(name = "author")
+    private String srcAuthor;
+
+    @Column(name = "title")
+    private String srcTitle;
     /**
      * used prevent initialization without the use of factory method
      * Also used to return a null-pattern object
@@ -64,17 +69,25 @@ public class PlaylistItem extends Model {
     public static PlaylistItem getNewItem(@Nonnull String link,
                                           @Nonnull Playlist parent,
                                           @Nonnull Domain srcDomain) {
-        /*
-        Link to be validated on adding to playlist
-        if (linkValidation(link, type)) {
-            PlaylistItem item = new PlaylistItem(playlist, type, link);
-            // link should be validated
-            return item;
-        }*/
+
         PlaylistItem nPlaylistItem = new PlaylistItem();
         nPlaylistItem.link = link;
         nPlaylistItem.parent = parent;
         nPlaylistItem.sourceType = srcDomain.toString();
+        return nPlaylistItem;
+    }
+
+    public static PlaylistItem getNewItem(@Nonnull String link,
+                                          @Nonnull Playlist parent,
+                                          @Nonnull Domain srcDomain,
+                                          String title,
+                                          String author,
+                                          String thumbnail) {
+
+        PlaylistItem nPlaylistItem = getNewItem(link, parent, srcDomain);
+        nPlaylistItem.thumbnailUrl = thumbnail;
+        nPlaylistItem.srcAuthor = author;
+        nPlaylistItem.srcTitle = title;
         return nPlaylistItem;
     }
 
@@ -96,4 +109,17 @@ public class PlaylistItem extends Model {
     public String getLink() {
         return link;
     }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public String getTitle() {
+        return srcTitle;
+    }
+
+    public String getAuthor() {
+        return srcAuthor;
+    }
+
 }

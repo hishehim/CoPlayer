@@ -19,12 +19,13 @@ body {
     padding: 10px;
     overflow: hidden;
 }
-.modal-header, h4, .close {
+.modal-header, h4.header, button.close {
     background-color: #5cb85c;
     color:white !important;
     text-align: center;
     font-size: 30px;
 }
+
 .modal-footer {
     background-color: #f9f9f9;
 }
@@ -46,12 +47,6 @@ div.container-fluid {
     max-width: 1280px;
     background-color: transparent;
 }
-/*
-
-button.btn {
-    background-color: #5cb85c;
-}
-*/
 
 label.error {
     color: #FF0000;
@@ -67,4 +62,22 @@ div.modal-content {
 
 #preview-container {
     display: none;
+}
+
+.pad-v-sm {
+    padding: 15px 0;
+}
+
+img.thumbnail {
+    width: 120px;
+    height: 90px;
+    margin: 0;
+}
+
+li.list-group-item {
+    padding: 5px 10px;
+}
+
+div.media-body {
+    padding: 5px 0;
 }

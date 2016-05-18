@@ -3,90 +3,107 @@
 @import statics.DomainData
 
 @scripts = {
-    <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
-    <script src='@routes.Assets.versioned("javascripts/playlist.edit.js")'></script>
-    <script src='@routes.Assets.versioned("javascripts/utility.js")'></script>
+<script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
+<script src='@routes.Assets.versioned("javascripts/playlist.edit.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/utility.js")'></script>
 }
 
 @main(playlist.getTitle(), scripts) {
 
-    <div class="modal" id="add-item" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body" style="padding:40px 50px;">
-                    <form role="form" action="javascript:checkUrl()" method="post" style="padding-bottom: 15px;">
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="input_url">
-                                url</label>
-                            <input id="input_url" type="url" name="input_url" class="form-control" placeholder="url"
-                                autocomplete="off">
+<div class="modal" id="add-item" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style="padding:40px 50px;">
+                <label class="control-label" for="input_url">Link:</label>
+                <div class="row">
+                    <div class="span12">
+                        <div class="input-group">
+                            <input id="input_url" type="url" class="form-control" placeholder="link to video or audio">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" onclick="checkUrl()">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                                </span>
+                        </div><!-- /input-group -->
+                    </div><!-- /.col-lg-6 -->
+                </div><!-- /.row -->
+                <label id="url-error" class="error" style="display = none;"></label>
+                <div id="preview-container">
+                    <hr>
+                    <div class="panel">
+                        <div class="media pad-v-sm">
+                            <div class="media-left">
+                                <img id="src-img" src="" height="90" width="120">
+                            </div>
+                            <div class="media-body">
+                                <h4 id="src-title-lb" class="media-heading"></h4>
+                                <p id="src-author-lb"></p>
+                            </div>
                         </div>
-                        <button class="btn btn-success btn-block">Check</button>
+                    </div>
+                    <form role="form" action="@routes.Playlists.addItem(playlist.getId())" method="post">
+                        <input id="src-title" name="src-title" type="hidden" value="">
+                        <input id="src-author" name="src-author" type="hidden" value="">
+                        <input id="src-img-url" name="src-img-url" type="hidden" value="">
+                        <input id="src-url" name="src-url" type="hidden" value="">
+                        <input id="src-type" name="src-type" type="hidden" value="">
+                        <button class="btn btn-success btn-block">Add</button>
                     </form>
-                    <label id="url-error" class="error" style="display = none;"></label>
-                    <div id="preview-container">
-                        <form role="form" action="@routes.Playlists.addItem(playlist.getId())" method="post">
-                            <label id="src-title-lb"></label><br>
-                            <p id="src-author"></p>
-                            <input id="src-url" name="src-url" type="hidden" value="">
-                            <input id="src-type" name="src-type" type="hidden" value="">
-                            <button class="btn btn-success btn-block">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="delete-playlist" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="padding:35px 50px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4>Are you sure you want to delete "@playlist.getTitle()"?</h4>
+            </div>
+            <div class="modal-footer">
+                <div class="row" style="padding: 0px 20px;">
+                    <div class="pull-right" style="padding-left: 10px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                    <div class="pull-right">
+                        <form role="form" action="@routes.Playlists.remove(playlist.getId())" method="post">
+                            <button class="btn btn-danger btn-ok" type="submit">Delete</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal" id="delete-playlist" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="padding:35px 50px;">
-                    <h4>Are you sure you want to delete "@playlist.getTitle()"?</h4>
-                </div>
-                <div class="modal-footer">
-                    <div class="row" style="padding: 0px 20px;">
-                        <div class="pull-right" style="padding-left: 10px;">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        </div>
-                        <div class="pull-right">
-                            <form role="form" action="@routes.Playlists.remove(playlist.getId())" method="post">
-                                <button class="btn btn-danger btn-ok" type="submit">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <h1>@playlist.getTitle()</h1>
-    @if(playlist.getSize() > 0) {
-    <a href="@routes.Playlists.play(playlist.getId())">
-        <button class="btn btn-submit">play</button>
-    </a>
-    }
-    <a href="#delete-playlist" role="button" class="btn btn-danger" data-toggle="modal">Delete</a>
-    <a href="#add-item" role="button" class="btn btn-default" data-toggle="modal">Add Item</a>
-    <!--<form action="@routes.Playlists.addItem(playlist.getId())" method="post">
-        <label>Video URL</label>
-        @* &lt;!&ndash;TODO: EXTRA SOURCE FILE ID FROM GIVEN LINK
-&ndash;&gt; *@
-<input id="user_url" name="url" placeholder="link to source" required>
-<select id="srcTypeSelector" name="source_type">
-    @* &lt;!&ndash;TODO: AUTO-DETECT DOMAIN OF GIVEN LINK AND SWITCH OPTIONS ACCORDINGLY
-    &ndash;&gt; *@
-    @for(srcDomain <- DomainData.domainList){
-    <option value="@srcDomain">@srcDomain</option>
-    }
-</select>
-<button>Add</button>
-</form>-->
-
+<h1>@playlist.getTitle()</h1>
+@if(playlist.getSize() > 0) {
+<a href="@routes.Playlists.play(playlist.getId())" style="margin-right: 10px;" class="btn btn-success">
+    play
+</a>
+}
+<a href="#add-item" role="button" class="btn btn-default" data-toggle="modal">Add Item</a>
+<a href="#delete-playlist" role="button" class="btn btn-danger pull-right" data-toggle="modal">Delete</a>
 <p>Links: @playlist.getSize()</p>
 <hr>
-<hr>
-<table id="pl-item-container">
+<ul class="list-group">
+    @for(item <- playlist.getTracks()) {
+    <li class="list-group-item">
+        <div class="media">
+            <div class="media-left">
+                <img class="thumbnail" src="@item.getThumbnailUrl()">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">@item.getTitle()</h4>
+                <p>@item.getAuthor()</p>
+            </div>
+        </div>
+    </li>
+    }
+</ul>
+<!--<table id="pl-item-container">
     @for(item <- playlist.getTracks()) {
     <tr>
         <td>@item.getLink()</td>
@@ -98,5 +115,5 @@
         </td>
     </tr>
     }
-</table>
+</table>-->
 }
