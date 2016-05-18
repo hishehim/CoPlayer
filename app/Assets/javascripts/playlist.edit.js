@@ -1,56 +1,74 @@
-
-// Click run to begin the lesson
-
-
-function getDomainName(d) {
-    if (d.match(/youtube/i) || d.match(/youtu.be/i)) {
-        return "youtube";
-    }
-    else if (d.match(/soundcloud/i)) {
-        return "soundcloud";
-    }
-    else {
-        return null;
-    }
-}
-
-
-function extractDomain(url) {
-    var domain;
-    //find & remove protocol (http, ftp, etc.) and get domain
-    if (url.indexOf("://") > -1) {
-        domain = url.split('/')[2];
-    }
-    else {
-        domain = url.split('/')[0];
-    }
-
-    //find & remove port number
-    domain = domain.split(':')[0];
-
-    return getDomainName(domain);
-}
-
 function extractYouTubeID(url) {
-    var regEx = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
+    var regEx = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
     var matches = url.match(regEx);
     return matches[1];
 }
 
-tyurl = "https://www.youtube.com/watch?v=9DW8oyfqZSc";
-scurl = "https://soundcloud.com/blevebrown/payroll-feat-jimmy-2shoes";
-
-tyurls = [
-    "http://www.youtube.com/watch?v=0zM3nApSvMg&feature=feedrec_grec_index",
-    "http://www.youtube.com/user/IngridMichaelsonVEVO#p/a/u/1/0zM3nApSvMg",
-    "http://www.youtube.com/v/0zM3nApSvMg?fs=1&amp;hl=en_US&amp;rel=0",
-    "http://www.youtube.com/watch?v=0zM3nApSvMg#t=0m10s",
-    "http://www.youtube.com/embed/0zM3nApSvMg?rel=0",
-    "http://www.youtube.com/watch?v=0zM3nApSvMg",
-    "http://youtu.be/0zM3nApSvMg"
-    ];
-
-for (i = 0; i < tyurls.length; i++) {
-    console.log(extractYouTubeID(tyurls[i]));
+function setItemVal(id, src, title, author) {
+    $("#src-url").val(id);
+    $("#src-type").val(src);
+    $("#src-title-lb").text(title);
+    $("#src-author").text(author);
 }
 
+function clearItemVal() {
+    $("#src-title-lb").text('');
+    $("#src-author").text('');
+    $("#src-url").val('');
+    $("#src-type").val('');
+}
+
+function showError(msg) {
+    $("#url-error").text(msg);
+    $("#url-error").show();
+}
+
+function checkUrl() {
+    clearItemVal();
+    $("#preview-container").hide();
+    $("#url-error").hide();
+    $("#url-error").text('');
+    var url = $("#input_url").val();
+    var src;
+
+    $.ajax({
+        dataType: "json",
+        url: "https://noembed.com/embed?url=" + url,
+        success: function(data) {
+            if ('error' in data) {
+                showError("Supported providers are YOUTUBE and SOUNDCLOUD. Ensure url references only single item");
+                return false;
+            }
+            console.log(data);
+            switch(data.provider_name.toLowerCase()) {
+                case "soundcloud":
+                    var scRegex = /.com\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+(\?|$)/;
+                    var scId = scRegex.exec(data.url);
+                    if (scId) {
+                        scId = scId[0];
+                        if (scId[scId.length-1] == '?') {
+                            scId = scId.substring(5, scId.length - 1);
+                        } else {
+                            scId = scId.substring(5);
+                        }
+                        setItemVal(scId, data.provider_name, data.title, data.author_name);
+                        $("#preview-container").show();
+                    } else {
+                        showError("Provided url does not link to single item");
+                    }
+                    break;
+                case "youtube":
+                    setItemVal(extractYouTubeID(data.url), data.provider_name, data.title, data.author_name);
+                    $("#preview-container").show();
+                    break;
+                default:
+                    $("#url-error").text(data.provider_name + " is currently not supported");
+                    $("#url-error").show();
+            }
+        }
+    }).fail(function(data, status, err) {
+        alert("failed");
+        console.error("getJson failed: " + status + " error: " + err);
+        console.log(data);
+    });
+}

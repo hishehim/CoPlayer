@@ -145,8 +145,8 @@ public class Playlists extends Controller {
             return badRequest();
         }
 
-        String urlStr = nItemForm.get("url");
-        String srcTypeStr = nItemForm.get("source_type");
+        String urlStr = nItemForm.get("src-url");
+        String srcTypeStr = nItemForm.get("src-type");
         Domain srcDomain = DomainData.getDomain(srcTypeStr);
 
         if (srcDomain == null) {

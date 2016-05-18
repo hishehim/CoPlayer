@@ -149,6 +149,7 @@ public class Application extends Controller {
         return ok(JavaScriptReverseRouter.create("jsRouter",
                 routes.javascript.Playlists.play(),
                 routes.javascript.Playlists.edit(),
+                routes.javascript.Playlists.addItem(),
                 routes.javascript.UserProfile.showProfile(),
                 controllers.json.routes.javascript.PlaylistJSON.getPlaylist(),
                 controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),

@@ -6,11 +6,16 @@ import controllers.Application;
 import controllers.UserAuth;
 import models.Playlist;
 import models.Users;
+import org.json.JSONObject;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,5 +106,22 @@ public class PlaylistJSON extends Controller {
                 .setParameter("ownerId", userRowID)
                 .findList());
         return result;
+    }
+
+    public Result oEmbed(String srcLink) {
+        String requestUrl = "http://www.youtube.com/oembed?url=";
+        String options = "&format=json";
+        try {
+            URL url = new URL(requestUrl + srcLink + options);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+
+            return ok();
+        } catch (MalformedURLException e) {
+            JSONObject json = new JSONObject();
+            return badRequest(Json.toJson(json));
+        } catch (IOException e) {
+            return internalServerError();
+        }
     }
 }

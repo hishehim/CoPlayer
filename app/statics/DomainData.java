@@ -46,9 +46,7 @@ public final class DomainData {
      * Main method used to convert domain name in string to Domain enum
      * */
     @Nullable
-    public static Domain getDomain(String domain) {
-        String dName = "";
-
+    public static Domain getDomain(@Nonnull String domain) {
         return domainMap.get(domain.toLowerCase());
     }
 
