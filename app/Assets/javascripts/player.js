@@ -261,8 +261,6 @@ function populate() {
                 a.href = "undefined";
                 a.appendChild(document.createTextNode(item.title));
                 a.appendChild(document.createElement('br'));
-                a.appendChild(document.createTextNode("Source: "+item.sourceType));
-                a.appendChild(document.createElement('br'));
                 m_header.appendChild(a);
                 m_body.appendChild(m_header);
                 m.appendChild(m_body);
