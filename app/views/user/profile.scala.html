@@ -13,23 +13,24 @@
 @main(user.getUsername(), script) {
 
 <h1><i class="fa fa-user"></i> @user.getUsername()</h1>
-<a href="#new-playlist" role="button" class="btn btn-default" data-toggle="modal">New Playlist</a>
+@if(isOwner) {
+    <a href="#new-playlist" role="button" class="btn btn-default" data-toggle="modal">New Playlist</a>
+}
 <hr>
 
-@if(isOwner) {
-    <ul class="nav nav-tabs nav-justified" role="tablist">
-        <li role="presentation" class="active"><a data-toggle="tab" role="tab" href="#public-pl">Public</a></li>
+<ul class="nav nav-tabs nav-justified" role="tablist">
+    <li role="presentation" class="active"><a data-toggle="tab" role="tab" href="#public-pl">Public</a></li>
+    @if(isOwner) {
         <li role="presentation"><a data-toggle="tab" role="tab" href="#private-pl">Private</a></li>
-    </ul>
+    }
+</ul>
 
-    <div class="tab-content">
-        <div class="tab-pane fade in active" id="public-pl" ></div>
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="public-pl" ></div>
+    @if(isOwner){
         <div class="tab-pane fade" id="private-pl"></div>
-    </div>
+    }
+</div>
 
-} else {
-    <div id="public-pl">
-    </div>
-}
 
-}
+} @* main closing bracket *@

@@ -30,12 +30,12 @@ function getQueryVariable(variable)
 
 var createPlaylistContainer = function(){ return; };
 
-function loadPL(url, container){
+function loadPL(url, listContainer){
     $.ajax({
         dataType: "json",
         url: url,
         success: function(data) {
-             var listView = document.getElementById(container);
+             var listView = document.getElementById(listContainer);
              // loop through json array and append it to the main container
              $.each(data, function(i, obj) {
                  if (obj !== undefined || obj !== null) {
