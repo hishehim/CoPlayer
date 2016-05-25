@@ -10,18 +10,6 @@ function createListContainer(playlist) {
     $(body).html(playlist.owner + "<br />size: " + playlist.size);
     playlistContainer.appendChild(header);
     playlistContainer.appendChild(body);
-/*    playlistContainer.id = "playlist-" + playlist.id;
-    playlistContainer.style.outline = "1px solid #333333";
-    var jsr = jsRouter.controllers.Playlists.play(playlist.id);
-
-    playlistContainer.appendChild(
-        createHyperLink(playlist.title, jsr.url));
-
-    jsr = jsRouter.controllers.UserProfile.showProfile(playlist.owner);
-    playlistContainer.appendChild(
-        createHyperLink(playlist.owner, jsr.url));
-
-    playlistContainer.appendChild(createTextDiv(playlist.size.toString().concat(" links")));*/
     return playlistContainer;
 }
 
@@ -36,15 +24,14 @@ function loadPlaylist() {
         url: jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist().url,
         // success is the callback function for successful ajax call
         success: function(data) {
-             // get target container to populate the list
-             var listView = document.getElementById("playlist-main-list");
-            // loop through json array and append it to the main container
-            $.each(data, function(i, obj) {
+                // get target container to populate the list
+                var listView = document.getElementById("playlist-main-list");
+                // loop through json array and append it to the main container
+                $.each(data, function(i, obj) {
                 if (obj !== undefined || obj !== null) {
                     listView.appendChild(createListContainer(obj));
                 }
-            });
-            console.log(data);
+                });
             }
        }).fail(function(data, status, err) {
                alert("Unable to fetch playlist data");

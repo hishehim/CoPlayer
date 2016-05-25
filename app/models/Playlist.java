@@ -71,14 +71,14 @@ public class Playlist extends Model {
     private Playlist() {}
 
     @Nullable
-    public static Playlist getNewPlaylist(@Nonnull String title, @Nonnull Users owner) {
+    public static Playlist getNewPlaylist(@Nonnull String title, @Nonnull Users owner, boolean isPrivate) {
         if (title.isEmpty()) {
             return new Playlist();
         }
         Playlist playlist = new Playlist();
         playlist.owner = owner;
         playlist.title = title; // Title should be checked for uniqueness among the same user
-        playlist.isPrivate = false;
+        playlist.isPrivate = isPrivate;
 
         /*
         * Calculated collision rate with half full database is 0.5^4 ~= 6%

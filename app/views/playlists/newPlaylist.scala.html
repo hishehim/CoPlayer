@@ -1,0 +1,31 @@
+
+<div class="modal" id="new-playlist" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="padding:35px 50px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4>New Playlist</h4>
+            </div>
+            <div class="modal-body" style="padding:40px 50px;">
+                <form role="form" action="@routes.Playlists.create()" method="post">
+                    <div class="form-group">
+                        <label for="new-title">Playlist Title:</label>
+                        <input id="new-title" type="text" class="form-control" name="title"
+                               placeholder="new playlist title" required>
+                    </div>
+                    <div class="btn-group form-group" data-toggle="buttons">
+                        <label class="btn btn-info active">
+                            <input type="radio" name="setPrivate" value="0" id="setPublic" autocomplete="off" checked> Public
+                        </label>
+                        <label class="btn btn-info">
+                            <input type="radio" name="setPrivate" value="1" id="setPrivate" autocomplete="off"> Private
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">
+                        Create
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

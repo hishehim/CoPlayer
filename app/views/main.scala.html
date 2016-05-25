@@ -5,16 +5,18 @@
 <html lang="en">
     <head>
         <title id="@title">@title</title>
-
+        <meta  charset="UTF-8">
         <link rel="stylesheet" media="screen" href='@routes.Assets.versioned("stylesheets/main.css")'>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
         <link rel="shortcut icon" type="image/png" href='@routes.Assets.versioned("images/favicon.png")'>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
         @scripts
 
-        <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         @if(!session().containsKey("username")) {
             @* scripts used for login *@
             @* scripts used for signup *@
@@ -28,14 +30,16 @@
         @user.signup()
     }
 
+    @playlists.newPlaylist()
+
     <body>
-    <div id="container">
+    <div id="container" class="container">
         @navigation()
 
         @if(flash.containsKey("success")) {
-        <p class="text-center alert alert-success">@flash.get("success")</p>
+        <p class="text-center alert alert-success alert-dismissible">@flash.get("success")</p>
         } else { @if(flash.containsKey("error")) {
-        <p class="text-center alert alert-danger">@flash.get("error")</p>
+        <p class="text-center alert alert-danger alert-dismissible">@flash.get("error")</p>
         }}
 
         @content

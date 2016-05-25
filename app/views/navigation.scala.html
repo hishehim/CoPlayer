@@ -1,8 +1,5 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
-        <div class="navbar-header">
-        </div>
-        <div>
             <ul class="nav navbar-nav">
                 <li>
                 <a href="@routes.Application.index()">
@@ -31,20 +28,11 @@
                             Sign Up</a>
                 </li>
                 }
+                <li>
+
+                </li>
             </ul>
-                <div class="pull-right">
-                    <form class="navbar-form" role="form" action="@routes.Playlists.create()" method="post">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="title"
-                                   placeholder="new playlist title" required>
-                            <div class="input-group-btn">
-                                <button type="submit" class="btn btn-inverse btn-submit">
-                                    <i class="glyphicon glyphicon-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                <a href="#new-playlist" role="button" class="btn navbar-btn pull-right btn-success" data-toggle="modal">
+                    <i class="glyphicon glyphicon-plus"></i> New Playlist</a>
         </div>
-    </div>
 </nav>

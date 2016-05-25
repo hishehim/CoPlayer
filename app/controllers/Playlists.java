@@ -69,6 +69,7 @@ public class Playlists extends Controller {
 
         String userID = Application.getSessionUsrId();
         String title = playlistForm.get("title");
+        boolean isPrivate = playlistForm.get("setPrivate").equals("1");
 
         if (title == null || title.isEmpty()) {
             flash("error", "Invalid title");
@@ -99,7 +100,7 @@ public class Playlists extends Controller {
                 return internalServerError("Error verifying user data");
             }
 
-            Playlist nPlaylist = Playlist.getNewPlaylist(title, user);
+            Playlist nPlaylist = Playlist.getNewPlaylist(title, user, isPrivate);
             if (nPlaylist == null) {
                 flash("error", "could not create new playlist"); // REMOVE ON DEPLOY
                 // too many collision on ID gen, need to expand ID length
@@ -154,11 +155,7 @@ public class Playlists extends Controller {
         String author = nItemForm.get("src-author");
         String thumbnail = nItemForm.get("src-img-url");
         Domain srcDomain = DomainData.getDomain(srcTypeStr);
-        try {
-            title = new String(title.getBytes("UTF8"), "UTF8");
-        } catch (UnsupportedEncodingException e ){
-            System.out.println("error" + e.getMessage());
-        }
+
         if (srcDomain == null) {
             flash("error", "Invalid source type");
             /* TODO redirect route should be the previous page or default to playlist page
