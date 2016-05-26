@@ -155,7 +155,6 @@ function play(index) {
         index = (index + playlist.length) % playlist.length;
     }
     if (index < playlist.length && index >= 0) {
-
         playingPlayer.stop();
         switch (playlist[index].sourceType.toLowerCase()) {
             case 'youtube':
@@ -190,7 +189,8 @@ function beginPlaylist() {
         setTimeout(beginPlaylist, 100);
     } else {
         curIndex = 0;
-        play(0);
+        //play(0);
+        $('.list-group-item').first().click();
     }
 }
 
@@ -217,9 +217,11 @@ function populate() {
                 //wrapper div
                 var d = document.createElement('a');
                 d.href = "#";
-                d.className = "list-group-item flat";
+                d.className = "list-group-item flat track-item";
                 $(d).click(function(event){
                     event.preventDefault();
+                    $('.list-group-item').removeClass('active');
+                    $(this).addClass('active');
                     play(i);
                 });
                 //media div

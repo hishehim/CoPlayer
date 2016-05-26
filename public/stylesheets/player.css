@@ -46,6 +46,7 @@ h1 {
 }
 
 .player-controls {
+    z-index: 3;
     height: 34px;
 }
 
@@ -61,4 +62,10 @@ h1 {
     height: 1em;
     line-height: 1em;
     font-size: smaller;
+}
+
+.track-item.active, track-item.active:hover {
+    color: black;
+    background-color: lightgray;
+    border-color: lightgray;
 }
