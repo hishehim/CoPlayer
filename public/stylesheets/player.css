@@ -64,8 +64,8 @@ h1 {
     font-size: smaller;
 }
 
-.track-item.active, track-item.active:hover {
-    color: black;
-    background-color: lightgray;
-    border-color: lightgray;
+.track-item.active, track-item.active:hover, track-item.active:focus {
+    color: black !important;
+    background-color: lightgray !important;
+    border-color: lightgray !important;
 }

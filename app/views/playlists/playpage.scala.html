@@ -11,7 +11,11 @@
 
 <div id="playlist-title-bar">
     <h1>@playlist.getTitle()</h1>
-    <label><i class="fa fa-user"></i> @owner.getUsername()</label>
+    <label><i class="fa fa-user"></i>
+        <a class="custom-anchor" href="@routes.UserProfile.showProfile(owner.getUsername())">
+        @owner.getUsername()
+        </a>
+    </label>
 </div>
 <hr>
 <div class="main-player-wrapper">
