@@ -80,7 +80,26 @@ div.media-body {
     padding: 5px 0;
 }
 
-.btn {
+.text-overflow {
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.btn {
+    border-radius: 0px !important;
+}
+
+.list-group-item {
+    border-radius: 0px !important;
+}
+
+.flat {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+
+.modal-content {
+    border-radius: 0 !important;
 }

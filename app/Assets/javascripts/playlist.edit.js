@@ -1,3 +1,29 @@
+function getDomainName(d, url) {
+    if (d.match(/youtube/i) || d.match(/youtu.be/i)) {
+        return "youtube";
+    }
+    else if (d.match(/soundcloud/i)) {
+        return "soundcloud";
+    }
+    else {
+        return false;
+    }
+}
+
+function extractURLDomain(url) {
+    var domain, dData;
+    //find & remove protocol (http, ftp, etc.) and get domain
+    if (url.indexOf("://") > -1) {
+        domain = url.split('/')[2];
+    }
+    else {
+        domain = url.split('/')[0];
+    }
+    //find & remove port number
+    domain = domain.split(':')[0];
+    return getDomainName(domain, url);
+}
+
 function extractYouTubeID(url) {
     var regEx = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
     var matches = url.match(regEx);
@@ -51,10 +77,28 @@ function checkUrl() {
         url: "https://noembed.com/embed?url=" + url,
         success: function(data) {
             if ('error' in data) {
-                showError("Supported providers are YOUTUBE and SOUNDCLOUD. Ensure url references only single item");
+                var forbid = /^403 /;
+                var notFound = /^404 /;
+                if (forbid.test(data.error)) {
+                    showError("The provided link does not allow embedding.");
+                } else if (notFound.test(data.error)) {
+                    showError("No result.");
+                } else {
+                    var d = extractURLDomain(url);
+                    switch (d) {
+                        case "soundcloud":
+                            showError("Could not find the track you are looking for.");
+                            break;
+                        case "youtube":
+                            showError("Could not find the video you are looking for");
+                            break;
+                        default:
+                            showError("Supported providers are YOUTUBE and SOUNDCLOUD. Ensure url references only single item");
+                            break;
+                    }
+                }
                 return false;
             }
-            console.log(data);
             switch(data.provider_name.toLowerCase()) {
                 case "soundcloud":
                     var scRegex = /.com\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+(\?|$)/;
@@ -84,6 +128,5 @@ function checkUrl() {
     }).fail(function(data, status, err) {
         alert("failed");
         console.error("getJson failed: " + status + " error: " + err);
-        console.log(data);
     });
 }

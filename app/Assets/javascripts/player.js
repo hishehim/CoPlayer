@@ -1,17 +1,4 @@
 
-
-/*
-var playlist = [
-    {type: 'youtube', id: 'XsTjI75uEUQ'},
-    {type: 'soundcloud', id: 'relaxdaily/relaxing-piano-music-work_study_meditation' },
-    {type: 'youtube', id: 'mOO5qRjVFLw'},
-    {type: 'soundcloud', id: 'relaxdaily/relaxing-music-calm-studying-yoga' },
-    {type: 'youtube', id: 'WZjFMj7OHTw'},
-    {type: 'soundcloud', id: 'sai-ram-49/charlie-puth-see-you-again-piano-demo-version-without-wiz-khalifafurious-7-soundtrack' },
-    {type: 'youtube', id: 'l1Q-cI4RE5s'},
-    {type: 'soundcloud', id: 'didlybom/ryuichi-sakamoto-merry-christmas-mr-lawrence'},
-];
-*/
 var playlist = [];
 
 var curIndex = 0;
@@ -117,7 +104,7 @@ function onYouTubeIframeAPIReady() {
         'enablejsapi':1,
         'origin': document.domain,
         'rel': 0,
-        'fs': 0
+        'fs': 1,
       },
       events: {
         'onReady': onPlayerInitialized,
@@ -136,7 +123,6 @@ function onPlayerReady(event) {
     if (playingPlayer.player == "yt") {
         event.target.playVideo();
     }
-    //event.target.playVideo();
 }
 
 // play is ready to take api calls
@@ -150,7 +136,6 @@ function onPlayerInitialized(event) {
 function onPlayerStateChange(event) {
     switch(event.data) {
         case 0:
-            //event.target.stopVideo();
             playNext();
             break;
     }
@@ -231,36 +216,40 @@ function populate() {
             $(playlist).each(function(i,item) {
                 //wrapper div
                 var d = document.createElement('a');
-                d.href = "undefined";
-                d.className = "list-group-item";
+                d.href = "#";
+                d.className = "list-group-item flat";
                 $(d).click(function(event){
                     event.preventDefault();
                     play(i);
                 });
                 //media div
                 var m = document.createElement('div');
-                m.classname = "media";
+                m.className = "media";
                 //media thumbnail
                 var m_left = document.createElement('div');
                 m_left.className = "media-left";
                 var img = document.createElement('img');
                 img.src = item.thumbnailUrl;
-                img.className = "thumbnail";
+                img.className = "thumbnail flat";
                 m_left.appendChild(img);
                 m.appendChild(m_left);
                 //media body
                 var m_body= document.createElement('div');
                 m_body.className= "media-body";
                 //media header
-                var m_header = document.createElement('div');
-                m_header.className = "media-heading";
-                $(m_header).text(item.title);
-                m_body.appendChild(m_header);
+                var m_title = document.createElement('label');
+                m_title.className = "text-left text-overflow track-title";
+                $(m_title).text(item.title);
+
+                var m_author = document.createElement('div');
+                m_author.className = "text-left text-overflow track-author";
+                $(m_author).text(item.author);
                 m.appendChild(m_body);
+                m_body.appendChild(m_title);
+                m_body.appendChild(m_author);
                 d.appendChild(m);
                 trackList.appendChild(d);
             });
-            console.log(data);
         }
     }).fail(function(data, status, err) {
         alert("unable to fetch playlist data");

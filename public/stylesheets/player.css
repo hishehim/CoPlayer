@@ -2,56 +2,63 @@ h1 {
     margin: 0;
 }
 #playlist-title-bar {
-    height: 50px;
-    padding: 10px
+    padding: 10px 10px 0px 10px;
 }
 
 .player {
     min-height: 200px;
     min-width: 200px;
     display: 'none';
-    height: 100%;
-    width: 100%;
 }
 
-.main-wrapper{
+.main-player-wrapper{
     position: relative;
     height: 100%;
     width: 100%;
     max-height: 720px;
 }
 
-.player-wrapper{
+.embed-player-wrapper{
     position: absolute;
-    right: 305px;
+    right: 300px;
     left: 0;
     height: 100%;
     overflow: hidden;
+    border-right: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 .player-right-panel {
+    overflow: hidden;
     height: 100%;
     width: 300px;
     position: absolute;
-    top: 0;
     right: 0;
-    overflow-x: hidden;
-}
-
-.player-ctrl {
-    height: 30px;
 }
 
 .player-track-list {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    padding: 0;
-    margin: 0;
-    bottom: 0;
-    top: 30px;
-    left: 0;
-    right: -17px;
     position: absolute;
-    border-bottom: 1px solid black;
-    border-top: 1px solid black;
+    overflow-y: scroll;
+    right: -17px;
+    top: 34px;
+    bottom: 0px;
+    left: 0px;
+    margin: 0px;
+}
+
+.player-controls {
+    height: 34px;
+}
+
+.track-title {
+    height: 2em;
+    line-height: 1em;
+    font-size: small;
+    font-weight: bolder;
+    margin: 0px 2px 0px 0px;
+}
+
+.track-author {
+    height: 1em;
+    line-height: 1em;
+    font-size: smaller;
 }

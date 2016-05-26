@@ -17,10 +17,6 @@ public class UserProfile extends Controller {
         if (username == null) {
             return movedPermanently(routes.Application.index());
         }
-        /*if(Application.getSessionUsrId() != rowID){
-            flash().put("error","Nice try, but that is not your profile!");
-            return redirect(routes.Application.index());
-        }*/
         Users user = Users.find.where().eq("username",username).findUnique();
         if(user ==  null){
             if (Application.getSessionUsrName().equals(username)) {
