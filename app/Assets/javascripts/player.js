@@ -65,7 +65,13 @@ function loadSC(url) {
               hide_related: true,
         });
     playingPlayer.player = "sc";
-    playingPlayer.play = function(){scplayer.play();};
+    playingPlayer.play = function(){
+        scplayer.isPaused(
+            function(isPaused) {
+                if (isPaused) {
+                    scplayer.play();
+                }
+            });};
     playingPlayer.pause = function(){scplayer.pause();};
     playingPlayer.stop = function(){scplayer.pause();};
     /*
