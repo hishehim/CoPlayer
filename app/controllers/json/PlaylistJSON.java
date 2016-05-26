@@ -48,8 +48,8 @@ public class PlaylistJSON extends Controller {
             return notFound(Json.toJson(emptyResult));*/
         }
         if (playlist.isPrivate()) {
-            String curUsrId = Application.getSessionUsrId();
-            if (!playlist.getOwner().getUsername().equals(curUsrId)) {
+            String sessionUsrName = Application.getSessionUsrName();
+            if (!playlist.getOwner().getUsername().equals(sessionUsrName)) {
                 return unauthorized();
             }
         }
@@ -106,22 +106,5 @@ public class PlaylistJSON extends Controller {
                 .setParameter("ownerId", userRowID)
                 .findList());
         return result;
-    }
-
-    public Result oEmbed(String srcLink) {
-        String requestUrl = "http://www.youtube.com/oembed?url=";
-        String options = "&format=json";
-        try {
-            URL url = new URL(requestUrl + srcLink + options);
-            URLConnection connection = url.openConnection();
-            connection.connect();
-
-            return ok();
-        } catch (MalformedURLException e) {
-            JSONObject json = new JSONObject();
-            return badRequest(Json.toJson(json));
-        } catch (IOException e) {
-            return internalServerError();
-        }
     }
 }

@@ -1,4 +1,4 @@
-@(playlist: Playlist, items: List[PlaylistItem])
+@(playlist: Playlist, items: List[PlaylistItem], owner: Users)
 
 @scripts = {
     <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
@@ -9,28 +9,42 @@
 
 @main(playlist.getTitle(), scripts) {
 
-    <div id="playlist-title-bar">
-        <h1>@playlist.getTitle()</h1>
-    </div>
-    <div class="main-wrapper">
-    <div class="player-wrapper embed-responsive">
+<div id="playlist-title-bar">
+    <h1>@playlist.getTitle()</h1>
+    <label><i class="fa fa-user"></i>
+        <a class="custom-anchor" href="@routes.UserProfile.showProfile(owner.getUsername())">
+        @owner.getUsername()
+        </a>
+    </label>
+</div>
+<hr>
+<div class="main-player-wrapper">
+    <div class="embed-player-wrapper embed-responsive">
         <div id="yt-player" class="player embed-responsive-item"></div>
-        <iframe id="sc-player" class="player embed-responsive-item" src="https://w.soundcloud.com/player/?url=" scrolling="no" frameborder="no"></iframe>
+        <iframe id="sc-player" class="player embed-responsive-item" src="https://w.soundcloud.com/player/?url="
+                scrolling="no" frameborder="no"></iframe>
     </div>
     <div class="player-right-panel">
-        <div class="player-ctrl btn-group">
-            <button id="btn-prev" class="btn btn-secondary" onclick="playPrev()"><span class="glyphicon glyphicon-backward"></span></button>
-            <button id="btn-play" class="btn btn-secondary" onclick="playingPlayer.play()"><span class="glyphicon glyphicon-play"></span></button>
-            <button id="btn-pause" class="btn btn-secondary" onclick="playingPlayer.pause()"><span class="glyphicon glyphicon-pause"></span></button>
-            <button id="btn-next" class="btn btn-secondary" onclick="playNext()"><span class="glyphicon glyphicon-forward"></span></button>
+        <div class="btn-group btn-group-justified player-controls box-shadow--2dp">
+            <a href="javascript:void(0)" id="btn-prev" class="btn btn-secondary" onclick="playPrev()">
+                <span class="glyphicon glyphicon-backward" aria-hidden="true"></span></a>
+            <a href="javascript:void(0)" id="btn-play" class="btn btn-secondary" onclick="playingPlayer.play()">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+            <a href="javascript:void(0)" id="btn-pause" class="btn btn-secondary" onclick="playingPlayer.pause()">
+                <span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
+            <a href="javascript:void(0)" id="btn-next" class="btn btn-secondary" onclick="playNext()">
+                <span class="glyphicon glyphicon-forward" aria-hidden="true"></span></a>
+            <a href="javascript:void(0)" id="btn-repeat" type="button" class="btn btn-secondary" data-toggle="button"
+               aria-pressed="false" autocomplete="off" onclick="toggleRepeatAll()">
+                <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+            </a>
             @if(session.get("username") == playlist.getOwner().getUsername()) {
-            <a href="@routes.Playlists.edit(playlist.getId())"><button class="btn btn-secondary btn-sm"><span class="glyphicon glyphicon-edit">Edit</span></button></a>
+            <a href="@routes.Playlists.edit(playlist.getId())" class="btn btn-secondary">
+                <span class="glyphicon glyphicon-edit"></span></a>
             }
         </div>
-        <div class="player-track-list">
-            <div id="track-list" class="list-group">
-            </div>
+        <div id="track-list" class="list-group player-track-list">
         </div>
     </div>
-    </div>
+</div>
 }

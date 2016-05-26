@@ -39,7 +39,7 @@ public class Playlists extends Controller {
         if (playlist == null || playlist.getSize() <= 0) {
             return playlistNotFound();
         }
-        return ok(views.html.playlists.playpage.render(playlist, playlist.getTracks()));
+        return ok(views.html.playlists.playpage.render(playlist, playlist.getTracks(), playlist.getOwner()));
     }
 
     @Security.Authenticated(UserAuth.class)
@@ -178,12 +178,6 @@ public class Playlists extends Controller {
                 return notFound("Playlist does not exist");
             }
             if (!(playlist.getOwner().getId().equals(userID))) {
-                /*
-                 * flash("error", "You are not the owner of this playlist! Your attempt has been logged");
-                 * String logMsg = "User " + session("user_id") + " ftried to access playlist " +
-                 * playlistUID + " which belongs to user " + playlist.getOwner().rowID;
-                 * Logger.info(logMsg);
-                 */
                 return forbidden();
             }
             PlaylistItem nItem = PlaylistItem.getNewItem(urlStr, playlist, srcDomain, title, author, thumbnail);

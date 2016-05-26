@@ -36,9 +36,15 @@
             @navigation()
 
             @if(flash.containsKey("success")) {
-            <p class="text-center alert alert-success alert-dismissible">@flash.get("success")</p>
+            <div class="alert alert-success">
+                <a href="#" class="text-center close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Success!</strong> @flash.get("success")
+            </div>
             } else { @if(flash.containsKey("error")) {
-            <p class="text-center alert alert-danger alert-dismissible">@flash.get("error")</p>
+            <div class="alert alert-danger">
+                <a href="#" class="text-center close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Error:</strong> @flash.get("error")
+            </div>
             }}
 
             @content

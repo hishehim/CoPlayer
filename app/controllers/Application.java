@@ -86,8 +86,6 @@ public class Application extends Controller {
         session().clear();
     }
 
-    public Result signup(){return ok(views.html.index.render("CoPlay"));}
-
     public Result newUser(){
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
@@ -97,25 +95,20 @@ public class Application extends Controller {
         String password = userForm.data().get("password");
         String email = userForm.data().get("email");
 
-        /*
-        if(password.isEmpty()||username.isEmpty()||email.isEmpty()){
-            flash("error" , "Empty Fields");
-            return redirect(routes.Application.signup());
-        }*/
         //Check for valid characters for username and password
         if(!username_pattern.matcher(username).matches() || !password_pattern.matcher(password).matches()){
             flash("error","Invalid Character");
-            return redirect(routes.Application.signup());
+            return redirect(routes.Application.index());
         }
         //Check if username is already in use
         if(Users.find.where().eq("username",username).findUnique() != null){
             flash("error","Duplicate username");
-            return redirect(routes.Application.signup());
+            return redirect(routes.Application.index());
         }
         //Check if email is already in use
         if(Users.find.where().eq("email",email).findUnique() != null){
             flash("error","Email already registered");
-            return redirect(routes.Application.signup());
+            return redirect(routes.Application.index());
         }
 
         Users nUser = Users.createUser(username,password,email);
