@@ -1,4 +1,4 @@
-name := """embedded-playlist"""
+name := """coplayer"""
 
 version := "1.0-SNAPSHOT"
 
