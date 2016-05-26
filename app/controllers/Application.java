@@ -11,8 +11,8 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 import play.data.FormFactory;
-import views.html.user.signupform;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 public class Application extends Controller {
@@ -36,59 +36,72 @@ public class Application extends Controller {
         }
     }
 
+    public static String getSessionUsrName() {
+        if (session().containsKey("username")) {
+            return session("username");
+        } else {
+            return "";
+        }
+    }
+
     public Result index() {
         return ok(views.html.index.render("CoPlay"));
     }
 
-    public Result getlogin() {return ok(views.html.user.login.render(""));}
-
     public Result login() {
+
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return badRequest(views.html.user.login.render(""));
+            return badRequest(views.html.index.render(""));
         }
-        String username = userForm.data().get("username");
+
+        String username = userForm.data().get("username").toLowerCase();
         String password = userForm.data().get("password");
 
-        Users user = Users.find.where().eq("username",username).findUnique();
+        Users user = null;
+        if (username.contains("@")) {
+            user = Users.find.where().eq("email", username).findUnique();
+        } else {
+            user = Users.find.where().eq("username",username).findUnique();
+        }
         if (user != null && user.authenticate(password)){
             login(user);
             flash("success","Welcome back " +user.getUsername());
-        }else{
+        }else {
             flash("error", "Invalid login. Please check your username and password");
-            return redirect(routes.Application.getlogin());
+            return redirect(routes.Application.index());
         }
 
-        return redirect(routes.Application.index());
-        /***need a view page for user profile***/
+        return redirect(routes.UserProfile.showProfile(user.getUsername()));
     }
 
-    private void login(Users user) {
+    private static void login(Users user) {
         logoutRoutine();
         session("user_id",user.getId());
+        session("user_row_id", String.valueOf(user.getRowId()));
         session("username",user.getUsername());
     }
 
-    private void logoutRoutine() {
-        //logout stuff here
+    public static void logoutRoutine() {
         session().clear();
     }
 
-    public Result signup(){return ok(views.html.user.signupform.render(""));}
+    public Result signup(){return ok(views.html.index.render("CoPlay"));}
 
     public Result newUser(){
         DynamicForm userForm = formfactory.form().bindFromRequest();
         if (userForm.hasErrors()) {
-            return badRequest(signupform.render(""));
+            return badRequest(views.html.index.render("CoPlay"));
         }
         String username = userForm.data().get("username");
         String password = userForm.data().get("password");
         String email = userForm.data().get("email");
 
+        /*
         if(password.isEmpty()||username.isEmpty()||email.isEmpty()){
             flash("error" , "Empty Fields");
             return redirect(routes.Application.signup());
-        }
+        }*/
         //Check for valid characters for username and password
         if(!username_pattern.matcher(username).matches() || !password_pattern.matcher(password).matches()){
             flash("error","Invalid Character");
@@ -111,8 +124,7 @@ public class Application extends Controller {
 
         login(nUser);
 
-        return redirect(routes.Application.index());
-        /***need a view page for user profile***/
+        return redirect(routes.UserProfile.showProfile(username));
     }
 
     public Result logout() {
@@ -135,9 +147,12 @@ public class Application extends Controller {
      * */
     public Result javascriptRoutes() {
         return ok(JavaScriptReverseRouter.create("jsRouter",
-                controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
-                routes.javascript.Playlists.getById(),
+                routes.javascript.Playlists.play(),
+                routes.javascript.Playlists.edit(),
+                routes.javascript.Playlists.addItem(),
                 routes.javascript.UserProfile.showProfile(),
+                controllers.json.routes.javascript.PlaylistJSON.getPlaylist(),
+                controllers.json.routes.javascript.PlaylistJSON.getPublicPlaylist(),
                 controllers.json.routes.javascript.PlaylistJSON.getUsrPublicList(),
                 controllers.json.routes.javascript.PlaylistJSON.getUsrPrivateList()
             )

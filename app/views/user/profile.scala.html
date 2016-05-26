@@ -1,48 +1,36 @@
 @(user: Users, isOwner: Boolean = false)
 
 @script = {
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
-    <script src='@routes.Assets.versioned("javascripts/profilePage.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/utility.js")'></script>
     @if(isOwner) {
-    <script src='@routes.Assets.versioned("javascripts/tabTable.js")'></script>
-    <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("stylesheets/tabTable.css")'>
-    <script>
-        $(document).ready(function(){
-            loadPL('@json.routes.PlaylistJSON.getUsrPublicList()', 'public-pl');
-            loadPL('@json.routes.PlaylistJSON.getUsrPrivateList()', 'private-pl');
-            @*
-            loadPL(jsRouter.controllers.json.PlaylistJSON.getUsrPublicList(), 'public-pl');
-            loadPL(jsRouter.controllers.json.PlaylistJSON.getUsrPrivateList(), 'private-pl');
-            *@
-            document.getElementById('public-pl').style.display="block"
-        });
-    </script>
+        <script src='@routes.Assets.versioned("javascripts/profilePagePr.js")'></script>
     } else {
-    <script>
-        $(document).ready(function(){
-            loadPL('@json.routes.PlaylistJSON.getUsrPublicList(user.getUsername())', 'public-pl');
-            @*loadPL(jsRouter.controllers.json.PlaylistJSON.getPublicPlaylist(@user.getUsername()), 'public-pl');*@
-        });
-    </script>
+        <script src='@routes.Assets.versioned("javascripts/profilePage.js")'></script>
     }
 }
 
 @main(user.getUsername(), script) {
-    <h1>@user.getUsername()</h1>
-    <hr>
-    @if(isOwner) {
-        <ul class="tab">
-            <li><a id="public-tab" href="#" class="tabLink" onclick="openTab(event, 'public-pl')" onload="this.click()">Public</a></li>
-            <li><a id="private-tab" href="#" class="tabLink" onclick="openTab(event, 'private-pl')">Private</a></li>
-        </ul>
-        <div id="public-pl" class="tabContainer">
-        </div>
 
-        <div id="private-pl" class="tabContainer">
-        </div>
-    } else {
-        <div id="public-pl">
-        </div>
-    }
+<h1><i class="fa fa-user"></i> @user.getUsername()</h1>
+@if(isOwner) {
+    <a href="#new-playlist" role="button" class="btn btn-default" data-toggle="modal">New Playlist</a>
 }
+<hr>
+
+<ul class="nav nav-tabs nav-justified" role="tablist">
+    <li role="presentation" class="active"><a data-toggle="tab" role="tab" href="#public-pl">Public</a></li>
+    @if(isOwner) {
+        <li role="presentation"><a data-toggle="tab" role="tab" href="#private-pl">Private</a></li>
+    }
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="public-pl" ></div>
+    @if(isOwner){
+        <div class="tab-pane fade" id="private-pl"></div>
+    }
+</div>
+
+
+} @* main closing bracket *@

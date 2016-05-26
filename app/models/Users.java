@@ -11,6 +11,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.io.BaseEncoding;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.validation.Constraints;
@@ -22,10 +24,12 @@ public class Users extends Model{
 
     @Id
     @Column(name = "_id")
+    @JsonIgnore
     private long rowId;
 
     @Constraints.Required
     @Column(unique = true)
+    @JsonIgnore
     private String email;
 
     @Constraints.Required
@@ -34,10 +38,12 @@ public class Users extends Model{
 
     @Constraints.Required
     @Column(unique = true)
+    @JsonIgnore
     private String password_hash;
 
     @Constraints.Required
     @Constraints.MaxLength(20)
+    @JsonIgnore
     @Column(name = "id", unique = true)
     private String id;
 
@@ -52,7 +58,7 @@ public class Users extends Model{
     public static Users createUser(@Nonnull String username, @Nonnull String password,
                                    @Nonnull String email){
         Users nUser = new Users();
-        nUser.username = username;
+        nUser.username = username.toLowerCase();
         nUser.password_hash = BCrypt.hashpw(password,BCrypt.gensalt());
         nUser.email = email;
         nUser.id = genUID();
@@ -65,6 +71,7 @@ public class Users extends Model{
         return BaseEncoding.base64Url().encode(byteArr);
     }
 
+    @JsonIgnore
     public String getEmail() {
         return email;
     }
@@ -73,15 +80,18 @@ public class Users extends Model{
         return username;
     }
 
+    @JsonIgnore
     public long getRowId() {
         return rowId;
     }
 
+    @JsonIgnore
     public String getId() {
         return id;
     }
 
     @Nonnull
+    @JsonIgnore
     public List<Playlist> getPlaylists() {
         return playlists;
     }

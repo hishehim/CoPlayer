@@ -1,6 +1,9 @@
 function openTab(e, tabID) {
     var i, tabs, tabLinks;
 
+    $(".tabContainer").each(function(i,tc) {
+        $(tc).hide();
+    });
     tabs = document.getElementsByClassName("tabContainer");
 
     for (i = 0; i < tabs.length; i++) {

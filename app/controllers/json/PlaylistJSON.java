@@ -6,15 +6,16 @@ import controllers.Application;
 import controllers.UserAuth;
 import models.Playlist;
 import models.Users;
-import org.h2.engine.User;
-import org.json.JSONException;
 import org.json.JSONObject;
-import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,19 +28,32 @@ import static com.avaje.ebean.Ebean.createSqlQuery;
 public class PlaylistJSON extends Controller {
 
     public Result getPlaylist(String playlistId) {
+        if (playlistId == null) {
+            return notFound();
+        }
+        if (!Playlist.UID_PATTERN.matcher(playlistId).matches()) {
+            /* invalid id pattern */
+            return notFound();
+        }
 
-        Playlist playlist = Playlist.find.where().eq("uid", playlistId).findUnique();
-
-        if (playlist == null) {
-            JSONObject emptyResult = new JSONObject();
+        Playlist playlist = Playlist.find.where().eq("id", playlistId).findUnique();
+        if (playlist == null || playlist.getSize() <= 0) {
+            return notFound();
+/*            JSONObject emptyResult = new JSONObject();
             try {
                 emptyResult.put("error", "does not exist");
             } catch (JSONException ex) {
                 Logger.error("Error with JSONObject.put(constants)", ex);
             }
-            return ok(Json.toJson(emptyResult));
+            return notFound(Json.toJson(emptyResult));*/
         }
-        return ok(Json.toJson(playlist));
+        if (playlist.isPrivate()) {
+            String curUsrId = Application.getSessionUsrId();
+            if (!playlist.getOwner().getUsername().equals(curUsrId)) {
+                return unauthorized();
+            }
+        }
+        return ok(Json.toJson(playlist)).as("text/json; charset='utf-8'");
     }
 
     /**
@@ -49,7 +63,7 @@ public class PlaylistJSON extends Controller {
         /* Manual query required */
         String sql = "select u.username as owner, p.title, p.id, p.size from playlist p " +
                 " inner join users u on u._id = p.owner__id " +
-                " where p.is_private = :isPrivate";
+                " where p.is_private = :isPrivate and p.size > 0";
         List<SqlRow> sqlResult = new ArrayList<>();
         sqlResult.addAll(Ebean.createSqlQuery(sql)
                 .setParameter("isPrivate", false)
@@ -58,8 +72,8 @@ public class PlaylistJSON extends Controller {
     }
 
     public Result getUsrPublicList(String username) {
-        if (username == null || username.isEmpty()) {
-            username = session("username");
+        if (username == null) {
+            return notFound();
         }
         Users user = Users.find.where().eq("username", username).findUnique();
         if (user == null) {
@@ -92,5 +106,22 @@ public class PlaylistJSON extends Controller {
                 .setParameter("ownerId", userRowID)
                 .findList());
         return result;
+    }
+
+    public Result oEmbed(String srcLink) {
+        String requestUrl = "http://www.youtube.com/oembed?url=";
+        String options = "&format=json";
+        try {
+            URL url = new URL(requestUrl + srcLink + options);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+
+            return ok();
+        } catch (MalformedURLException e) {
+            JSONObject json = new JSONObject();
+            return badRequest(Json.toJson(json));
+        } catch (IOException e) {
+            return internalServerError();
+        }
     }
 }

@@ -1,11 +1,13 @@
 package models;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.validation.Constraints;
-import statics.SourceType;
+import statics.Domain;
 
 import javax.annotation.Nonnull;
 import javax.persistence.*;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Mike on 3/6/2016.
@@ -21,11 +23,13 @@ public class PlaylistItem extends Model {
     @Id
     @GeneratedValue
     @Column(name = "_id")
+    @JsonIgnore
     private long rowId;
 
     @Constraints.Required
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "parent__id")
+    @JsonIgnore
     private Playlist parent;
 
     /**
@@ -37,15 +41,17 @@ public class PlaylistItem extends Model {
     @Column(name = "source_type")
     private String sourceType;
 
-    /**
-     * Embedded video link
-     * */
     @Constraints.Required
+    @Column(name = "identifier")
     private String link;
 
-    @Constraints.Required
-    private String title;
+    private String thumbnailUrl;
 
+    @Column(name = "author")
+    private String srcAuthor;
+
+    @Column(name = "title")
+    private String srcTitle;
     /**
      * used prevent initialization without the use of factory method
      * Also used to return a null-pattern object
@@ -59,40 +65,40 @@ public class PlaylistItem extends Model {
      * Factory method for creating a playlists item. Data are validated here.
      * @param link the embedded video link
      * @param parent the playlist the new item shall belong to
-     * @param srcType the original source of the link
+     * @param srcDomain the original source of the link
      * */
     public static PlaylistItem getNewItem(@Nonnull String link,
                                           @Nonnull Playlist parent,
-                                          @Nonnull SourceType.Type srcType) {
-        /*
-        Link to be validated on adding to playlist
-        if (linkValidation(link, type)) {
-            PlaylistItem item = new PlaylistItem(playlist, type, link);
-            // link should be validated
-            return item;
-        }*/
+                                          @Nonnull Domain srcDomain) {
+
         PlaylistItem nPlaylistItem = new PlaylistItem();
         nPlaylistItem.link = link;
         nPlaylistItem.parent = parent;
-        nPlaylistItem.sourceType = srcType.toString();
+        nPlaylistItem.sourceType = srcDomain.toString();
+        return nPlaylistItem;
+    }
+
+    public static PlaylistItem getNewItem(@Nonnull String link,
+                                          @Nonnull Playlist parent,
+                                          @Nonnull Domain srcDomain,
+                                          String title,
+                                          String author,
+                                          String thumbnail) {
+
+        PlaylistItem nPlaylistItem = getNewItem(link, parent, srcDomain);
+        nPlaylistItem.thumbnailUrl = thumbnail;
+        nPlaylistItem.srcAuthor = author;
+        nPlaylistItem.srcTitle = title;
         return nPlaylistItem;
     }
 
 
+    @JsonIgnore
     public long getId() {
         return rowId;
     }
 
-    @PrePersist
-    private void prePersist() {
-        parent.increaseSize();
-    }
-
-    @PostRemove
-    private void postRemove() {
-        parent.decreaseSize();
-    }
-
+    @JsonIgnore
     public Playlist getParent() {
         return parent;
     }
@@ -101,11 +107,24 @@ public class PlaylistItem extends Model {
         return sourceType;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getLink() {
         return link;
     }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public String getTitle() {
+        try {
+            return new String(srcTitle.getBytes("UTF8"), "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            return srcTitle;
+        }
+    }
+
+    public String getAuthor() {
+        return srcAuthor;
+    }
+
 }

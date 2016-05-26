@@ -4,58 +4,45 @@
 
 <html lang="en">
     <head>
-        <title>@title</title>
-
+        <title id="@title">@title</title>
+        <meta  charset="UTF-8">
         <link rel="stylesheet" media="screen" href='@routes.Assets.versioned("stylesheets/main.css")'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
         <link rel="shortcut icon" type="image/png" href='@routes.Assets.versioned("images/favicon.png")'>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
         @scripts
 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        @if(!session().containsKey("username")) {
+            @* scripts used for login *@
+            @* scripts used for signup *@
+            <script type="text/javascript" src='@routes.Assets.versioned("javascripts/jquery.validate.js")'></script>
+            <script type="text/javascript" src='@routes.Assets.versioned("javascripts/signup.js")' ></script>
+        }
     </head>
 
-
-    @* HEADER *@
-    <ul>
-        <li><a href="@routes.Application.index()">Home</a></li>
-        @if( session.containsKey("username") ) {
-            <li>Hello, @session.get("username")</li>
-            <li><a href="@routes.Application.logout()">Logout</a> </li>
-            <li>
-                <a href='@routes.UserProfile.showProfile(session.get("username"))'>Profile</a>
-            </li>
-        } else {
-        <li><a href="@routes.Application.login()">Login</a></li>
-        <li><a href="@routes.Application.signup()">Sign Up!</a></li>
-        }
-        <li>
-            <form action="@routes.Playlists.create()" method="post">
-                <input type="text" name="title" class="form-control input-lg"
-                       placeholder="Playlist Title" required>
-                <button>Create</button>
-            </form>
-        </li>
-    </ul>
-    @* END HEADER *@
-
-
-    <hr>
+    @if(!session().containsKey("username")){
+        @user.login()
+        @user.signup()
+    }
+    @playlists.newPlaylist()
 
     <body>
-    @* Display flash messages *@
-    <center>
-        <font color ="green">
+        <div id="container" class="container">
+            @navigation()
+
             @if(flash.containsKey("success")) {
-            <p>Success Flash Message:</p>
-            @flash.get("success")
-            }
-        </font>
-        <font color = "red">
-            @if(flash.containsKey("error")) {
-            <p>Error Flash Message:</p>
-            @flash.get("error")
-            }
-        </font>
-    </center>
-        @content
+            <p class="text-center alert alert-success alert-dismissible">@flash.get("success")</p>
+            } else { @if(flash.containsKey("error")) {
+            <p class="text-center alert alert-danger alert-dismissible">@flash.get("error")</p>
+            }}
+
+            @content
+        </div>
     </body>
     <hr>
     @* FOOTER *@

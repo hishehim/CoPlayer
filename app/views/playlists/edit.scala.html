@@ -1,0 +1,49 @@
+@(playlist: Playlist, user: Users)
+
+@import statics.DomainData
+
+@scripts = {
+<script type="text/javascript" src='@routes.Application.javascriptRoutes()'></script>
+<script src='@routes.Assets.versioned("javascripts/playlist.edit.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/utility.js")'></script>
+}
+
+@main(playlist.getTitle(), scripts) {
+
+@addItem(playlist.getId())
+@deleteConfirm("Are you sure you want to delete \"" + playlist.getTitle() + "\"", routes.Playlists.remove(playlist.getId()))
+
+<h1>@playlist.getTitle()</h1>
+@if(playlist.getSize() > 0) {
+<a href="@routes.Playlists.play(playlist.getId())" style="margin-right: 10px;" class="btn btn-success">
+    play
+</a>
+}
+<a href="#add-item" role="button" class="btn btn-default" data-toggle="modal">Add Item</a>
+<a href="#delete-playlist" role="button" class="btn btn-danger pull-right" data-toggle="modal">Delete</a>
+<p>Links: @playlist.getSize()</p>
+<hr>
+<ul class="list-group">
+    @for(item <- playlist.getTracks()) {
+    <li class="list-group-item">
+        <div class="media">
+            <div class="media-left">
+                <img class="thumbnail" src="@item.getThumbnailUrl()">
+            </div>
+            <div class="media-body">
+                <div class="pull-right">
+                    <form role="form" action="@routes.Playlists.removeItem(playlist.getId())" method="post">
+                        <input type="hidden" name="it-id" value="@item.getId()">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+                <div>
+                    <h4 class="media-heading">@item.getTitle()</h4>
+                    <p>@item.getAuthor()</p>
+                </div>
+            </div>
+        </div>
+    </li>
+    }
+</ul>
+}

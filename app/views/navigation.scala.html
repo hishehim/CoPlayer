@@ -1,0 +1,38 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                <li>
+                <a href="@routes.Application.index()">
+                    <span class="glyphicon glyphicon-home"></span>
+                        Home</a>
+                </li>
+                @if( session.containsKey("username") ) {
+                <li>
+                    <a href="@routes.Application.logout()">
+                        <span class="glyphicon glyphicon-logout"></span>
+                            Logout</a>
+                </li>
+                <li>
+                    <a href='@routes.UserProfile.showProfile(session.get("username"))'>
+                        <span class="glyphicon glyphicon-home"></span>
+                            @session.get("username")</a>
+                </li>
+                } else {
+                <li>
+                    <a href="#Login" role="button" data-toggle="modal">
+                        <span class="glyphicon glyphicon-log-in"></span>
+                            Login</a>
+                </li>
+                <li>
+                    <a href="#Signup" role="button" data-toggle="modal">
+                            Sign Up</a>
+                </li>
+                }
+                <li>
+
+                </li>
+            </ul>
+                <a href="#new-playlist" role="button" class="btn navbar-btn pull-right btn-success" data-toggle="modal">
+                    <i class="glyphicon glyphicon-plus"></i> New Playlist</a>
+        </div>
+</nav>
